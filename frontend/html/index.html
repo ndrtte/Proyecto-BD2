@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ETL Executor - Sistema Sakila</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>ETL Executor</h1>
+        </div>
+
+        <div class="welcome-section">
+            <h2>
+                <svg class="icon" viewBox="0 0 24 24">
+                    <path d="M12 2L13.09 8.26L22 9L13.09 9.74L12 16L10.91 9.74L2 9L10.91 8.26L12 2Z"/>
+                </svg>
+                Iniciando el proceso ETL
+            </h2>
+            <p><strong>Bienvenido a la migración de datos para la base de datos de Sakila</strong></p>
+        </div>
+
+        <div class="method-selection">
+            <h3>Elige el método por el que quieres seleccionar la tabla origen:</h3>
+            <div class="method-buttons">
+                <div class="method-btn" data-method="table">
+                    <h4>(a) Por nombre de tabla</h4>
+                    <p>Selecciona una tabla</p>
+                </div>
+                <div class="method-btn" data-method="query">
+                    <h4>(b) Por consulta SQL</h4>
+                    <p>Ejecuta una consulta personalizada como origen</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección para selección por tabla -->
+        <div class="input-section" id="table-section">
+            <div class="form-group">
+                <label for="table-name">Ingresa el nombre de la tabla origen:</label>
+                <input 
+                    type="text" 
+                    id="table-name" 
+                    class="form-control" 
+                    placeholder=" "
+                    style="text-transform: uppercase;"
+                >
+                <button class="load-columns-btn" id="load-columns-btn">Cargar Columnas</button>
+            </div>
+
+            <div class="columns-section" id="columns-section">
+                <h4>Columnas disponibles:</h4>
+                <p>Selecciona las columnas que deseas migrar:</p>
+                <button class="select-all-btn" id="select-all-btn">Seleccionar Todas</button>
+                <div class="columns-grid" id="columns-grid">
+                    <!-- Las columnas se cargarán dinámicamente -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección para consulta SQL -->
+        <div class="input-section" id="query-section">
+            <div class="form-group">
+                <label for="sql-query">Consulta SQL:</label>
+                <textarea 
+                    id="sql-query" 
+                    class="form-control" 
+                    placeholder="SELECT * FROM rental"
+                    rows="6"
+                ></textarea>
+            </div>
+        </div>
+
+        <button class="run-btn" id="run-etl">
+            <span id="btn-text">Run ETL</span>
+        </button>
+
+        <div class="progress-section" id="progress-section">
+            <h4>Resultado de la migración:</h4>
+            <div class="status-messages" id="status-messages">
+                <!-- Los mensajes de estado se mostrarán aquí -->
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/index.js"></script>
+</body>
+</html>
