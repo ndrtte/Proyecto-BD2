@@ -2,6 +2,7 @@ let selectedMethod = null;
         let selectedTable = null;
         let selectedColumns = [];
         let availableColumns = [];
+        let selectedDestinationTable = null;
 
         // Manejo de selección de método
         document.querySelectorAll('.method-btn').forEach(btn => {
@@ -160,15 +161,25 @@ let selectedMethod = null;
                     showError('Por favor selecciona al menos una columna');
                     return;
                 }
-                
+
+                if( !selectedDestinationTable) {
+                    showError('Por favor ingresa el nombre de la tabla destino');
+                    return;
+                }
+
                 await runETLTable();
+
             } else {
                 const sqlQuery = document.getElementById('sql-query').value.trim();
                 if (!sqlQuery) {
                     showError('Por favor ingresa una consulta SQL');
                     return;
                 }
-                
+
+                if( !selectedDestinationTable) {
+                    showError('Por favor ingresa el nombre de la tabla destino');
+                    return;
+                }
                 await runETLQuery(sqlQuery);
             }
         });
@@ -192,7 +203,7 @@ let selectedMethod = null;
             
             const migrationData = {
                 sourceTable: selectedTable,
-                destinationTable: `tbl_${selectedTable.toLowerCase()}`,
+                destinationTable: selectedDestinationTable ,
                 listColumn: selectedColumns
             };
             

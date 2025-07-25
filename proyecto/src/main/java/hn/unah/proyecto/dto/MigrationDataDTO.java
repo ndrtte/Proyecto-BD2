@@ -1,7 +1,5 @@
 package hn.unah.proyecto.dto;
 
-import java.util.List;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -17,5 +15,5 @@ public class MigrationDataDTO {
     
     private String sourceTable;
     private String destinationTable;
-    private List<String> listColumn;
+    private String listColumn;
 }
