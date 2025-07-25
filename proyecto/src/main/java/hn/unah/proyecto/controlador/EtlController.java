@@ -33,7 +33,7 @@ public class EtlController {
     @PostMapping("/migrar/datos")
     public String migracionDatos(@RequestBody MigrationDataDTO data) {
         
-        return "";
+        return etlService.migracionDatos(data);
     }
     
     

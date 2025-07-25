@@ -101,7 +101,7 @@ async function loadColumns(tableName) {
                 columnsSection.classList.add('active');
                 showSuccess(`Se encontraron ${columns.length} columnas en la tabla ${tableName}`);
             } else {
-                showError(`No se encontraron columnas para la tabla ${tableName}`);
+                showError(`La tabla ${tableName} no existe o no tiene columnas.`);
             }
         } else {
             const errorText = await response.text();

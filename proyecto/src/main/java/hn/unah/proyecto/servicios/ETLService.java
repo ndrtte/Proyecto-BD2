@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import hn.unah.proyecto.dto.MigrationDataDTO;
 import hn.unah.proyecto.dto.SourceTableDTO;
 
 @Service
@@ -26,6 +27,11 @@ public class ETLService {
             columnas = jdbcTemplate.queryForList(sql, String.class, tablaOrigen);
         }
         return columnas;
+    }
+
+    public String migracionDatos(MigrationDataDTO data) {
+        
+        return "";
     }
 
 }
