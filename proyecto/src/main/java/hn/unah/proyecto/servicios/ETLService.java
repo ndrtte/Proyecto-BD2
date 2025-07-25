@@ -30,8 +30,36 @@ public class ETLService {
     }
 
     public String migracionDatos(MigrationDataDTO data) {
-        
-        return "";
+
+        String result;
+        if(data.getMethod().equals("Tabla")) {
+            result = migrarPorTabla(data);
+        }
+        else {
+            result = migrarPorConsulta();
+        }
+        return result;
+    }
+
+    private String migrarPorTabla(MigrationDataDTO data) {
+        String columnas = "";
+        int tamanio = data.getListColumn().size();
+        int i = 0;
+
+        for (String columna : data.getListColumn()) {
+            columnas = columnas + columna.toUpperCase();
+            i++;
+            if(i < tamanio){
+                columnas += ", ";
+            }
+        }
+
+        return columnas;
+    }
+
+
+    private String migrarPorConsulta(){
+        return "Migración por consulta no implementada";
     }
 
 }

@@ -25,14 +25,12 @@ public class EtlController {
 
 
     @PostMapping("/obtener/columnas")
-    public List<String> postMethodName(@RequestBody SourceTableDTO sourceTable)
-    {
+    public List<String> postMethodName(@RequestBody SourceTableDTO sourceTable){
         return etlService.obtenerColumnas(sourceTable);
     }
     
     @PostMapping("/migrar/datos")
     public String migracionDatos(@RequestBody MigrationDataDTO data) {
-        
         return etlService.migracionDatos(data);
     }
     

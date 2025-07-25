@@ -213,7 +213,8 @@ async function runETLTable() {
     const migrationData = {
         sourceTable: selectedTable,
         destinationTable: selectedDestinationTable,
-        listColumn: selectedColumns
+        listColumn: selectedColumns,
+        method: selectedMethod
     };
 
     try {
