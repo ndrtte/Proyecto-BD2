@@ -11,12 +11,15 @@ public class Hechos {
 
     private Integer id_hechos;
     private Integer idRenta;
-    private Integer idCliente;
+    //private Integer idCliente;
     private Integer idEmpleado;
     private Integer idPelicula;
     private Integer idTienda;
     private Integer idTiempo;
-    private Integer idPago;
+    //private Integer idPago;
 
     private Double montoPago;
+    private String audiencia; //clasificacion
+    private Double cantidad;
+    private Double tiempoRenta;
 }

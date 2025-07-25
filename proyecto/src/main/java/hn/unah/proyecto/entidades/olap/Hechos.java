@@ -43,13 +43,22 @@ public class Hechos {
     private dimTienda tienda;
 
     @ManyToOne 
-    @JoinColumn(name = "id_tiempo")
+    @JoinColumn(name = "id_fecha")
     private dimTiempo tiempo;
 
     // @ManyToOne 
     // @JoinColumn(name = "id_pago")
     // private dimPago pago;
 
-    @Column(name = "monto_pago")
+    @Column(name = "ingresos")
     private Double montoPago;
+
+    @Column(name = "audiencia")
+    private String audiencia; //clasificacion
+
+    @Column(name = "cantidad")
+    private Double cantidad;
+
+    @Column(name = "tiempo_renta")
+    private Double tiempoRenta;
 }
