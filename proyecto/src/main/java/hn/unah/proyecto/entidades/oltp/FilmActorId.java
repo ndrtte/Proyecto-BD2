@@ -1,15 +1,15 @@
-package hn.unah.proyecto.entidades.oltp;
+// package hn.unah.proyecto.entidades.oltp;
 
-import lombok.Data;
-import java.io.Serializable;
+// import lombok.Data;
+// import java.io.Serializable;
 
-@Data
-public class FilmActorId implements Serializable {
+// @Data
+// public class FilmActorId implements Serializable {
    
-    private Actor actor;
-    private Film pelicula;
+//     private Actor actor;
+//     private Film pelicula;
     
-}
+// }
 
 
 

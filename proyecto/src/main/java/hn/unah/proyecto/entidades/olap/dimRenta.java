@@ -1,6 +1,6 @@
 package hn.unah.proyecto.entidades.olap;
 
-import java.sql.Date;
+import java.util.Date;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -26,5 +26,5 @@ public class dimRenta {
     private Date fechaRenta;
 
     @Column(name = "fecha_devolucion")
-    private Date fecha_devolucion;
+    private Date fechaDevolucion;
 }
