@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import hn.unah.proyecto.dto.MigrationDataDTO;
 import hn.unah.proyecto.dto.SourceTableDTO;
-import hn.unah.proyecto.servicios.MenuETLService;
+import hn.unah.proyecto.servicios.ETLService;
 
 import java.util.List;
 
@@ -21,13 +21,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 public class EtlController {
 
     @Autowired
-    private MenuETLService menuETLService;
+    private ETLService etlService;
 
 
     @PostMapping("/obtener/columnas")
     public List<String> postMethodName(@RequestBody SourceTableDTO sourceTable)
     {
-        return menuETLService.obtenerColumnas(sourceTable);
+        return etlService.obtenerColumnas(sourceTable);
     }
     
     @PostMapping("/migrar/datos")

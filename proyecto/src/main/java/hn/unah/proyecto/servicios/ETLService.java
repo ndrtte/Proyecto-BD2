@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import hn.unah.proyecto.dto.SourceTableDTO;
 
 @Service
-public class MenuETLService {
+public class ETLService {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
