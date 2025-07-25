@@ -56,7 +56,7 @@ let selectedMethod = null;
             loadBtn.textContent = 'Cargando...';
             
             try {
-                const response = await fetch('/api/etl/obtener/columnas', {
+                const response = await fetch('http://localhost:8080/api/etl/obtener/columnas', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
