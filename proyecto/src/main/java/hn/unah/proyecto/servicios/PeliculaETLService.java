@@ -5,8 +5,9 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import hn.unah.proyecto.dto.DuracionDTO;
 import hn.unah.proyecto.dto.PeliculaDTO;
+import hn.unah.proyecto.entidades.olap.dimCategoria;
+import hn.unah.proyecto.entidades.olap.dimPelicula;
 import hn.unah.proyecto.entidades.oltp.Film;
 import hn.unah.proyecto.entidades.oltp.FilmCategory;
 import hn.unah.proyecto.repositorios.olap.DimCategoriaRepository;
@@ -34,7 +35,7 @@ public class PeliculaETLService {
 
     private List<PeliculaDTO> transformarPeliculas( List<Film> peliculasOrigen) {
 
-        List<PeliculaDTO> peliculaDTO = new ArrayList();
+        List<PeliculaDTO> peliculasDTO = new ArrayList<PeliculaDTO>();
 
         for (Film film : peliculasOrigen) {
             PeliculaDTO dtoPelicula = new PeliculaDTO();
@@ -44,38 +45,46 @@ public class PeliculaETLService {
 
             Integer idCategoria = filmCategory.getCategory().getId();
 
-            PeliculaDTO dto = new PeliculaDTO();
-            dto.setIdPelicula(film.getId());
-            dto.setTitulo(film.getTitulo());
-            dto.setIdCategoria(idCategoria);
-            dto.setAudiencia(film.getClasificacion());
+            dtoPelicula.setIdPelicula(film.getId());
+            dtoPelicula.setTitulo(film.getTitulo());
+            dtoPelicula.setIdCategoria(idCategoria);
+            dtoPelicula.setAudiencia(film.getClasificacion());
 
-            peliculaDTO.add(dto);
+            peliculasDTO.add(dtoPelicula);
         }
-        return peliculaDTO;
+        return peliculasDTO;
     }
+
+    private void cargarPeliculasOLAP(List<PeliculaDTO> peliculasDTO) {
+
+        List<dimPelicula> peliculas = new ArrayList<>();
+
+        for (PeliculaDTO dto : peliculasDTO) {
+            
+            dimCategoria categoria = dimCategoriaRepository.findById(dto.getIdCategoria()).orElse(null);
+
+            if(categoria == null) continue;
+
+            dimPelicula pelicula = new dimPelicula();
+            pelicula.setIdPelicula(dto.getIdPelicula());
+            pelicula.setTitulo(dto.getTitulo());
+            pelicula.setCategoria(categoria);
+            pelicula.setAudiencia(dto.getAudiencia());
+
+            peliculas.add(pelicula);
+        }
+        dimPeliculaReposiory.saveAll(peliculas);
+    }
+
+    public void ejecutarETL() {
+        List<Film> origen = extraerPeliculasOLTP();
+        List<PeliculaDTO> transformadas = transformarPeliculas(origen);
+        cargarPeliculasOLAP(transformadas);
+    }
+
+    public List<dimPelicula> getAllPeliculasOLAP() {
+        return dimPeliculaReposiory.findAll();
+    }    
 }
 
-
-//     // @Id
-//     // @Column(name = "id_pelicula")
-//     // private Integer idPelicula;
-
-//     // @Column(name = "titulo")
-//     // private String titulo;
-
-//     // @ManyToOne
-//     // @JoinColumn(name = "id_categoria")
-//     // private dimCategoria categoria;
-
-//     // @ManyToOne
-//     // @JoinColumn(name = "id_idioma")
-//     // private dimIdioma idioma;
-
-//     //     @ManyToOne
-//     // @JoinColumn(name = "id_duracion")
-//     // private dimDuracion duracion;
-
-//     // @Column(name = "audiencia")
-//     // private String audiencia;
 
