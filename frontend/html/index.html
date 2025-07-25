@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ETL Executor - Sistema Sakila</title>
     <link rel="stylesheet" href="../css/style.css">
 </head>
+
 <body>
     <div class="container">
         <div class="header">
@@ -15,7 +17,7 @@
         <div class="welcome-section">
             <h2>
                 <svg class="icon" viewBox="0 0 24 24">
-                    <path d="M12 2L13.09 8.26L22 9L13.09 9.74L12 16L10.91 9.74L2 9L10.91 8.26L12 2Z"/>
+                    <path d="M12 2L13.09 8.26L22 9L13.09 9.74L12 16L10.91 9.74L2 9L10.91 8.26L12 2Z" />
                 </svg>
                 Iniciando el proceso ETL
             </h2>
@@ -40,13 +42,8 @@
         <div class="input-section" id="table-section">
             <div class="form-group">
                 <label for="table-name">Ingresa el nombre de la tabla origen:</label>
-                <input 
-                    type="text" 
-                    id="table-name" 
-                    class="form-control" 
-                    placeholder=" "
-                    style="text-transform: uppercase;"
-                >
+                <input type="text" id="table-name" class="form-control" placeholder=" "
+                    style="text-transform: uppercase;">
                 <button class="load-columns-btn" id="load-columns-btn">Cargar Columnas</button>
             </div>
 
@@ -58,36 +55,25 @@
                     <!-- Las columnas se cargarán dinámicamente -->
                 </div>
             </div>
-<div class="form-group">
-                <label for="table-destination-name">Ingresa el nombre de la tabla destino:</label>
-                <input type="text" id="table-destination-name"
-                    class="form-control"
-                    placeholder=" "
-                    style="text-transform: uppercase;"
-                >
+            <div class="form-group">
+                <label for="destination-table-table">Ingresa el nombre de la tabla destino:</label>
+                <input type="text" id="destination-table-table" class="form-control" placeholder=" "
+                    style="text-transform: uppercase;">
             </div>
-            
+
         </div>
 
         <!-- Sección para consulta SQL -->
         <div class="input-section" id="query-section">
             <div class="form-group">
                 <label for="sql-query">Consulta SQL:</label>
-                <textarea 
-                    id="sql-query" 
-                    class="form-control" 
-                    placeholder="SELECT * FROM rental"
-                    rows="6"
-                ></textarea>
+                <textarea id="sql-query" class="form-control" placeholder="SELECT * FROM rental" rows="6"></textarea>
             </div>
 
             <div class="form-group">
-                <label for="table-destination-name">Ingresa el nombre de la tabla destino:</label>
-                <input type="text" id="table-destination-name"
-                    class="form-control"
-                    placeholder=" "
-                    style="text-transform: uppercase;"
-                >
+                <label for="destination-table-query">Ingresa el nombre de la tabla destino:</label>
+                <input type="text" id="destination-table-query" class="form-control" placeholder=" "
+                    style="text-transform: uppercase;">
             </div>
         </div>
 
@@ -105,4 +91,5 @@
 
     <script src="../js/index.js"></script>
 </body>
+
 </html>
