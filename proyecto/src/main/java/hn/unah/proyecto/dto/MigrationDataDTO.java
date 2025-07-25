@@ -15,6 +15,7 @@ import lombok.Setter;
 @Data
 public class MigrationDataDTO {
     
+    private String method;
     private String sourceTable;
     private String destinationTable;
     private List<String> listColumn;
