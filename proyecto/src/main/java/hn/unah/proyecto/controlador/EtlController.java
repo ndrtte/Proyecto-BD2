@@ -1,10 +1,10 @@
 package hn.unah.proyecto.controlador;
 
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import hn.unah.proyecto.dto.MigrationDataDTO;
-import hn.unah.proyecto.dto.SourceTableDTO;
 import hn.unah.proyecto.servicios.CategoriaETLService;
 import hn.unah.proyecto.servicios.ETLService;
 
@@ -26,7 +26,7 @@ public class EtlController {
 
 
     @PostMapping("/obtener/columnas")
-    public List<String> postMethodName(@RequestBody SourceTableDTO sourceTable){
+    public List<String> postMethodName(@RequestParam String sourceTable){
         return etlService.obtenerColumnas(sourceTable);
     }
     

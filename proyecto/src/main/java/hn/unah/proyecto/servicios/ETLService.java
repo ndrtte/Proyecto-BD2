@@ -8,7 +8,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import hn.unah.proyecto.dto.MigrationDataDTO;
-import hn.unah.proyecto.dto.SourceTableDTO;
 
 @Service
 public class ETLService {
@@ -25,23 +24,20 @@ public class ETLService {
     private CategoriaETLService categoriaETLService;
 
 
-    public List<String> obtenerColumnas(SourceTableDTO sourceTable) {
-        String tablaOrigen = sourceTable.getSourceTable().toUpperCase();
-        String metodo = sourceTable.getMethod();
-        List<String> columnas = new ArrayList<>();
-        String sql = "";
+    public List<String> obtenerColumnas(String sourceTable) {
+        String tablaOrigen = sourceTable.toUpperCase();
 
-        if (metodo.equalsIgnoreCase("Tabla")) {
-            sql = "SELECT COLUMN_NAME FROM USER_TAB_COLUMNS WHERE TABLE_NAME = ?";
-            columnas = jdbcTemplate.queryForList(sql, String.class, tablaOrigen);
-        }
+        List<String> columnas = new ArrayList<>();
+        String sql = "SELECT COLUMN_NAME FROM USER_TAB_COLUMNS WHERE TABLE_NAME = ?";
+        columnas = jdbcTemplate.queryForList(sql, String.class, tablaOrigen);
+
         return columnas;
     }
 
     public String migracionDatos(MigrationDataDTO data) {
 
         tablaDestino = data.getDestinationTable().toUpperCase();
-        if(data.getMethod().equals("Tabla")) {
+        if(data.getMethod().equalsIgnoreCase("Table")) {
             String sqlQuery = consultaPorTabla(data);
             
             if(data.getDestinationTable().equalsIgnoreCase("tbl_categoria")) {

@@ -60,12 +60,9 @@ async function loadColumns(tableName) {
         const response = await fetch('http://localhost:8080/api/etl/obtener/columnas', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/x-www-form-urlencoded'
             },
-            body: JSON.stringify({
-                sourceTable: tableName,
-                method: 'Tabla'
-            })
+            body: `sourceTable=${encodeURIComponent(tableName)}`
         });
 
         if (response.ok) {
@@ -218,7 +215,7 @@ async function runETLTable() {
     };
 
     try {
-        const response = await fetch('/api/etl/migrar/datos', {
+        const response = await fetch('http://localhost:8080/api/etl/migrar/datos', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
