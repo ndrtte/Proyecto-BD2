@@ -42,11 +42,12 @@ public class ETLService {
 
         tablaDestino = data.getDestinationTable().toUpperCase();
         String sqlQuery;
-        if (data.getMethod().equalsIgnoreCase("Table")) {
+        String metodo = data.getMethod();
+        if (metodo.equalsIgnoreCase("Table")) {
             sqlQuery = consultaPorTabla(data);
 
         } else {
-            sqlQuery = data.getSourceTable().toUpperCase();
+            sqlQuery = data.getSourceTable();
         }
 
         if (tablaDestino.equalsIgnoreCase("tbl_categoria")) {
@@ -54,7 +55,7 @@ public class ETLService {
         } else if (tablaDestino.equalsIgnoreCase("tbl_ciudad")) {
             ciudadETLService.ejecutarETL(sqlQuery);
         } else if (tablaDestino.equalsIgnoreCase("tbl_empleado")) {
-            
+            empleadoETLService.ejecutarETL(sqlQuery, metodo);
         } else if (tablaDestino.equalsIgnoreCase("tbl_pelicula")) {
 
         } else if (tablaDestino.equalsIgnoreCase("tbl_renta")) {

@@ -28,12 +28,6 @@ public class dimPelicula {
     @JoinColumn(name = "id_categoria")
     private dimCategoria categoria;
 
-    // @JoinColumn(name = "idioma")
-    // private String idioma;
-
-    // @JoinColumn(name = "rango_duracion")
-    // private String rango_duracion;
-
     @Column(name = "audiencia")
     private String audiencia;
 }
