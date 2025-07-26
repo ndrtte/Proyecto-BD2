@@ -28,6 +28,9 @@ public class ETLService {
     @Autowired
     private EmpleadoETLService empleadoETLService;
 
+    @Autowired
+    private PeliculaETLService peliculaETLService;
+
     public List<String> obtenerColumnas(String sourceTable) {
         String tablaOrigen = sourceTable.toUpperCase();
 
@@ -57,7 +60,7 @@ public class ETLService {
         } else if (tablaDestino.equalsIgnoreCase("tbl_empleado")) {
             empleadoETLService.ejecutarETL(sqlQuery, metodo);
         } else if (tablaDestino.equalsIgnoreCase("tbl_pelicula")) {
-
+            peliculaETLService.ejecutarETL(sqlQuery, metodo);
         } else if (tablaDestino.equalsIgnoreCase("tbl_renta")) {
 
         } else if (tablaDestino.equalsIgnoreCase("tbl_tiempo")) {
