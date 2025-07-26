@@ -1,9 +1,12 @@
 package hn.unah.proyecto.servicios;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import hn.unah.proyecto.dto.RentaDTO;
@@ -21,22 +24,30 @@ public class RentaETLService {
     @Autowired
     private DimRentaRepository dimRentaRepository;
 
-    private List<Rental> extraerRentasOLTP(){
-        return rentalRepository.findAll();
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    private List<Map<String, Object>>  extraerRentasOLTP(String sqlQuery){
+        List<Map<String, Object>> registros = jdbcTemplate.queryForList(sqlQuery);
+        return registros;
     }
 
-    public List<RentaDTO> transformarRentas(List<Rental> rentasOrigen) {
+    public List<RentaDTO> transformarRentas(List<Map<String, Object>> rentasOrigen) {
 
         List<RentaDTO> rentasDTO = new ArrayList<>();
 
-        for (Rental renta : rentasOrigen) {
+        for (Map<String, Object> renta : rentasOrigen) {
             RentaDTO dtoRenta = new RentaDTO();
-            dtoRenta.setIdRenta(renta.getId());
-            dtoRenta.setFechaRenta(renta.getFechaRenta());
-            dtoRenta.setFechaDevolucion(renta.getFechaDevolucion());
+            Integer id = ((Number) renta.get("RENTAL_ID")).intValue();
+            Date fechaRenta = (Date) renta.get("RENTAL_DATE");
+            Date fechaDev = (Date) renta.get("RETURN_DATE");
 
+
+            dtoRenta.setIdRenta(id);
+            dtoRenta.setFechaRenta(fechaRenta);
+            dtoRenta.setFechaDevolucion(fechaDev);
             rentasDTO.add(dtoRenta);
-        }        
+        }
         return rentasDTO;
     } 
 
@@ -56,13 +67,13 @@ public class RentaETLService {
         dimRentaRepository.saveAll(rentasDestino);
     }
 
-    public void ejecutarETL() {
-        List<Rental> origen = extraerRentasOLTP();
+    public void ejecutarETL(String sqlQuery) {
+        List<Map<String, Object>> origen = extraerRentasOLTP(sqlQuery);
         List<RentaDTO> transformadas = transformarRentas(origen);
         cargarRentasOLAP(transformadas);
     }
 
     public List<dimRenta> getAllCiudades() {
         return dimRentaRepository.findAll();
-    }    
+    }
 }
