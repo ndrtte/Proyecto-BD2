@@ -14,17 +14,23 @@ import hn.unah.proyecto.dto.SourceTableDTO;
 @Service
 public class ETLService {
 
-    private List<Map<String, Object>> registros = new ArrayList<>();
+
     private String tablaDestino = "";
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    private String consulta;
+
+    @Autowired
+    private CategoriaETLService categoriaETLService;
+
+
     public List<String> obtenerColumnas(SourceTableDTO sourceTable) {
         String tablaOrigen = sourceTable.getSourceTable().toUpperCase();
         String metodo = sourceTable.getMethod();
         List<String> columnas = new ArrayList<>();
-        String sql;
+        String sql = "";
 
         if (metodo.equalsIgnoreCase("Tabla")) {
             sql = "SELECT COLUMN_NAME FROM USER_TAB_COLUMNS WHERE TABLE_NAME = ?";
@@ -37,10 +43,10 @@ public class ETLService {
 
         tablaDestino = data.getDestinationTable().toUpperCase();
         if(data.getMethod().equals("Tabla")) {
-            registros = migrarPorTabla(data);
+            String sqlQuery = consultaPorTabla(data);
             
             if(data.getDestinationTable().equalsIgnoreCase("tbl_categoria")) {
-                
+                categoriaETLService.ejecutarETLTabla(sqlQuery);
             }else if (data.getDestinationTable().equalsIgnoreCase("tbl_ciudad")) {
 
             } else if (data.getDestinationTable().equalsIgnoreCase("tbl_empleado")) {
@@ -58,12 +64,12 @@ public class ETLService {
             }
         }
         else {
-            registros = migrarPorConsulta(data);
+            
         }
         return "";
     }
 
-    private List<Map<String, Object>> migrarPorTabla(MigrationDataDTO data) {
+    private String consultaPorTabla(MigrationDataDTO data) {
         String columnas = "";
         int tamanio = data.getListColumn().size();
         int i = 0;
@@ -76,14 +82,6 @@ public class ETLService {
             }
         }
 
-        String sql = "SELECT " + columnas.toUpperCase() + " FROM " + data.getSourceTable().toUpperCase();
-
-
-        return jdbcTemplate.queryForList(sql);
-    }
-
-
-    private List<Map<String, Object>> migrarPorConsulta(MigrationDataDTO data) {
-        return jdbcTemplate.queryForList(data.getSourceTable().toUpperCase());
+        return "SELECT " + columnas.toUpperCase() + " FROM " + data.getSourceTable().toUpperCase();
     }
 }

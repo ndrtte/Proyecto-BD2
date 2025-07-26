@@ -45,7 +45,7 @@ public class PeliculaETLService {
             FilmCategory filmCategory = filmCategoryRepository.findByFilmId(film.getId()).orElse(null);
             
 
-            Integer idCategoria = filmCategory.getCategory().getId();
+            Integer idCategoria = filmCategory.getCategory().getCategoria_id();
 
             dtoPelicula.setIdPelicula(film.getId());
             dtoPelicula.setTitulo(film.getTitulo());

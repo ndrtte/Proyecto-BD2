@@ -2,13 +2,14 @@ package hn.unah.proyecto.servicios;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import hn.unah.proyecto.dto.CategoriaDTO;
 import hn.unah.proyecto.entidades.olap.dimCategoria;
-import hn.unah.proyecto.entidades.oltp.Category;
 import hn.unah.proyecto.repositorios.olap.DimCategoriaRepository;
 import hn.unah.proyecto.repositorios.oltp.CategoryRepository;
 
@@ -21,22 +22,26 @@ public class CategoriaETLService {
     @Autowired
     private DimCategoriaRepository dimCategoriaRepository;
 
-    private List<Category> extraerCategoriasOLTP() {
-        return categoryRepository.findAll();
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    private List<Map<String, Object>> extraerCategoriasOLTP(String sqlQuery) {
+        List<Map<String, Object>> registros = jdbcTemplate.queryForList(sqlQuery);
+        return registros;
+
     }
 
-    public List<CategoriaDTO> transformarCategorias(List<Category> categoriasOrigen) {
-
+    public List<CategoriaDTO> transformarCategorias(List<Map<String, Object>> categoriasOrigen) {
         List<CategoriaDTO> categoriasDTO = new ArrayList<>();
-        
-        for (Category categoria : categoriasOrigen) {
-            CategoriaDTO dto = new CategoriaDTO(
-                categoria.getId(),
-                categoria.getNombre()
-            );
+
+        for (Map<String, Object> fila : categoriasOrigen) {
+            Integer id = fila.get("ID") != null ? ((Number) fila.get("ID")).intValue() : null;
+            String nombre = fila.get("NOMBRE") != null ? fila.get("NOMBRE").toString() : null;
+
+            CategoriaDTO dto = new CategoriaDTO(id, nombre);
             categoriasDTO.add(dto);
         }
-        
+
         return categoriasDTO;
     }
 
@@ -46,17 +51,16 @@ public class CategoriaETLService {
 
         for (CategoriaDTO dto : categoriasDTO) {
             dimCategoria entidad = new dimCategoria(
-                dto.getId(),
-                dto.getNombre()
-            );
+                    dto.getId(),
+                    dto.getNombre());
             categorias.add(entidad);
         }
 
         dimCategoriaRepository.saveAll(categorias);
-    }    
+    }
 
-    public void ejecutarETL() {
-        List<Category> origen = extraerCategoriasOLTP();
+    public void ejecutarETLTabla(String sqlQuery) {
+        List<Map<String, Object>> origen = extraerCategoriasOLTP(sqlQuery);
         List<CategoriaDTO> transformadas = transformarCategorias(origen);
         cargarCategoriasOLAP(transformadas);
     }
@@ -64,4 +68,5 @@ public class CategoriaETLService {
     public List<dimCategoria> getAllDimCategorias() {
         return dimCategoriaRepository.findAll();
     }
+
 }

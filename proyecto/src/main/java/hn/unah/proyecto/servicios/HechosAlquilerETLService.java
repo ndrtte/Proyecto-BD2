@@ -97,7 +97,7 @@ public class HechosAlquilerETLService {
 
             //metricas
             //ingresos
-            Double monto = paymentRepository.findByRental_Id(renta.getId()).getMonto();
+            Double monto = paymentRepository.findByRenta_Id(renta.getId()).getMonto();
 
             //clasificacion: R, G, NC-17, PG-13, PG
             String clasificacion = renta.getInventario().getPelicula().getClasificacion();

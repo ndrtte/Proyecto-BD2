@@ -5,12 +5,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import hn.unah.proyecto.dto.MigrationDataDTO;
 import hn.unah.proyecto.dto.SourceTableDTO;
+import hn.unah.proyecto.servicios.CategoriaETLService;
 import hn.unah.proyecto.servicios.ETLService;
 
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -34,6 +36,7 @@ public class EtlController {
         return etlService.migracionDatos(data);
     }
     
-    
+    @Autowired
+    private CategoriaETLService categoriaETLService;
 
 }
