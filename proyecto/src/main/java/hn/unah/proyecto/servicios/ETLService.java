@@ -53,12 +53,10 @@ public class ETLService {
 
             } else if (data.getDestinationTable().equalsIgnoreCase("tbl_tienda")) {
 
-            } else {
-                //Si la tabla destino no existe en el dw entonces aca tendra que mandar un mensaje al frontend
+            }else {
+                //Si la tabla destino no es ninguna de las anteriores, mando mensaje al front
             }
-
-
-
+        }
         else {
             registros = migrarPorConsulta(data);
         }
