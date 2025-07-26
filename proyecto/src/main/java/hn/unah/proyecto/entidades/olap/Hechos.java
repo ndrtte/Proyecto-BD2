@@ -24,7 +24,7 @@ public class Hechos {
 
     @ManyToOne
     @JoinColumn(name = "id_renta")
-    private dimRenta idRenta;
+    private dimRenta renta;
 
     // @ManyToOne 
     // @JoinColumn(name = "id_cliente")
@@ -57,8 +57,11 @@ public class Hechos {
     private String audiencia; //clasificacion
 
     @Column(name = "cantidad")
-    private Double cantidad;
+    private Integer cantidad;
 
     @Column(name = "tiempo_renta")
     private Double tiempoRenta;
+
+    @Column(name = "unidad_tiempo")
+    private String unidadTiempo;
 }
