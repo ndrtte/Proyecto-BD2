@@ -38,30 +38,28 @@ public class ETLService {
         tablaDestino = data.getDestinationTable().toUpperCase();
         if(data.getMethod().equals("Tabla")) {
             registros = migrarPorTabla(data);
+            
+            if(data.getDestinationTable().equalsIgnoreCase("tbl_categoria")) {
+                
+            }else if (data.getDestinationTable().equalsIgnoreCase("tbl_ciudad")) {
+
+            } else if (data.getDestinationTable().equalsIgnoreCase("tbl_empleado")) {
+
+            } else if (data.getDestinationTable().equalsIgnoreCase("tbl_pelicula")) {
+
+            } else if (data.getDestinationTable().equalsIgnoreCase("tbl_renta")) {
+
+            } else if (data.getDestinationTable().equalsIgnoreCase("tbl_tiempo")) {
+
+            } else if (data.getDestinationTable().equalsIgnoreCase("tbl_tienda")) {
+
+            }else {
+                //Si la tabla destino no es ninguna de las anteriores, mando mensaje al front
+            }
         }
         else {
             registros = migrarPorConsulta(data);
         }
-
-        switch (tablaDestino) {
-                case "tbl_categoria":
-                    break;
-                case "tbl_ciudad":
-                    break;
-                case "tbl_empleado":
-                    break;
-                case "tbl_renta":
-                    break;
-                case "tbl_tienda":
-                    break;
-                case "tbl_tiempo":
-                    break;
-                case "tbl_pelicula":
-                    break;
-                default:
-                    break;
-            }
-
         return "";
     }
 
@@ -88,5 +86,4 @@ public class ETLService {
     private List<Map<String, Object>> migrarPorConsulta(MigrationDataDTO data) {
         return jdbcTemplate.queryForList(data.getSourceTable().toUpperCase());
     }
-
 }
