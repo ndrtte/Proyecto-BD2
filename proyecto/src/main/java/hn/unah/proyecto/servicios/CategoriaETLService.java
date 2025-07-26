@@ -35,8 +35,8 @@ public class CategoriaETLService {
         List<CategoriaDTO> categoriasDTO = new ArrayList<>();
 
         for (Map<String, Object> fila : categoriasOrigen) {
-            Integer id = fila.get("ID") != null ? ((Number) fila.get("ID")).intValue() : null;
-            String nombre = fila.get("NOMBRE") != null ? fila.get("NOMBRE").toString() : null;
+            Integer id = ((Number) fila.get("CATEGORY_ID")).intValue();
+            String nombre = fila.get("NAME").toString();
 
             CategoriaDTO dto = new CategoriaDTO(id, nombre);
             categoriasDTO.add(dto);
