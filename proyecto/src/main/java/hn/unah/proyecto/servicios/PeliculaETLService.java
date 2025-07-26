@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import hn.unah.proyecto.dto.PeliculaDTO;
 import hn.unah.proyecto.entidades.olap.dimCategoria;
@@ -15,6 +16,7 @@ import hn.unah.proyecto.repositorios.olap.DimPeliculaReposiory;
 import hn.unah.proyecto.repositorios.oltp.FilmCategoryRepository;
 import hn.unah.proyecto.repositorios.oltp.FilmRepository;
 
+@Service
 public class PeliculaETLService {
     
     @Autowired

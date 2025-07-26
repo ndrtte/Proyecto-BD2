@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import hn.unah.proyecto.dto.EmpleadoDTO;
 import hn.unah.proyecto.entidades.olap.dimEmpleado;
@@ -13,6 +14,7 @@ import hn.unah.proyecto.repositorios.olap.DimEmpleadoRepository;
 import hn.unah.proyecto.repositorios.olap.DimTiendaRepository;
 import hn.unah.proyecto.repositorios.oltp.StaffRepository;
 
+@Service
 public class EmpleadoETLService {
 
     @Autowired
