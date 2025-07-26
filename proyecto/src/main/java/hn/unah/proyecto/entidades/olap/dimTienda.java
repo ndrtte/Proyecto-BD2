@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Entity
 @Table(name = "tbl_tienda")
-public class dimTienda {
+public class DimTienda {
     
     @Id
     @Column(name = "id_tienda")
@@ -27,5 +27,5 @@ public class dimTienda {
 
     @ManyToOne
     @JoinColumn(name = "id_ciudad")
-    private dimCiudad ciudad;
+    private DimCiudad ciudad;
 }

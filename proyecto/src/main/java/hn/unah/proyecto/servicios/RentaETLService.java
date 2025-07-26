@@ -10,7 +10,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import hn.unah.proyecto.dto.RentaDTO;
-import hn.unah.proyecto.entidades.olap.dimRenta;
+import hn.unah.proyecto.entidades.olap.DimRenta;
 import hn.unah.proyecto.entidades.oltp.Rental;
 import hn.unah.proyecto.repositorios.olap.DimRentaRepository;
 import hn.unah.proyecto.repositorios.oltp.RentalRepository;
@@ -53,10 +53,10 @@ public class RentaETLService {
 
     private void cargarRentasOLAP(List<RentaDTO> rentasDTO) {
 
-        List<dimRenta> rentasDestino = new ArrayList<>();
+        List<DimRenta> rentasDestino = new ArrayList<>();
 
         for (RentaDTO dto : rentasDTO){
-            dimRenta entidad = new dimRenta();
+            DimRenta entidad = new DimRenta();
             entidad.setIdRenta(dto.getIdRenta());
             entidad.setFechaRenta(dto.getFechaRenta());
             entidad.setFechaDevolucion(dto.getFechaDevolucion());
@@ -73,7 +73,7 @@ public class RentaETLService {
         cargarRentasOLAP(transformadas);
     }
 
-    public List<dimRenta> getAllCiudades() {
+    public List<DimRenta> getAllCiudades() {
         return dimRentaRepository.findAll();
     }
 }

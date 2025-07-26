@@ -24,7 +24,7 @@ public class Hechos {
 
     @ManyToOne
     @JoinColumn(name = "id_renta")
-    private dimRenta renta;
+    private DimRenta renta;
 
     // @ManyToOne 
     // @JoinColumn(name = "id_cliente")
@@ -32,19 +32,19 @@ public class Hechos {
 
     @ManyToOne 
     @JoinColumn(name = "id_empleado")
-    private dimEmpleado empleado;
+    private DimEmpleado empleado;
 
     @ManyToOne 
     @JoinColumn(name = "id_pelicula")
-    private dimPelicula pelicula;
+    private DimPelicula pelicula;
 
     @ManyToOne 
     @JoinColumn(name = "id_tienda")
-    private dimTienda tienda;
+    private DimTienda tienda;
 
     @ManyToOne 
     @JoinColumn(name = "id_fecha")
-    private dimTiempo tiempo;
+    private DimTiempo tiempo;
 
     // @ManyToOne 
     // @JoinColumn(name = "id_pago")

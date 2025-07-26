@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Entity
 @Table(name = "tbl_categoria")
-public class dimCategoria {
+public class DimCategoria {
     
     @Id
     @Column(name = "id_categoria")

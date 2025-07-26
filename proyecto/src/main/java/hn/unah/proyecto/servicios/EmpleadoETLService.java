@@ -9,8 +9,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import hn.unah.proyecto.dto.EmpleadoDTO;
-import hn.unah.proyecto.entidades.olap.dimEmpleado;
-import hn.unah.proyecto.entidades.olap.dimTienda;
+import hn.unah.proyecto.entidades.olap.DimEmpleado;
+import hn.unah.proyecto.entidades.olap.DimTienda;
 import hn.unah.proyecto.repositorios.olap.DimEmpleadoRepository;
 import hn.unah.proyecto.repositorios.olap.DimTiendaRepository;
 import hn.unah.proyecto.repositorios.oltp.StaffRepository;
@@ -75,17 +75,17 @@ public class EmpleadoETLService {
 
     private void cargarEmpleadosOLAP(List<EmpleadoDTO> empleadosTransformados) {
 
-        List<dimEmpleado> empleados = new ArrayList<>();
+        List<DimEmpleado> empleados = new ArrayList<>();
 
         for (EmpleadoDTO dto : empleadosTransformados) {
 
-            dimEmpleado empleado = dimEmpleadoRepository.findById(dto.getIdEmpleado()).orElse(null);
+            DimEmpleado empleado = dimEmpleadoRepository.findById(dto.getIdEmpleado()).orElse(null);
 
             if (empleado == null) {
-                empleado = new dimEmpleado();
+                empleado = new DimEmpleado();
             }
 
-            dimTienda tienda = tiendaRepository.findById(dto.getIdTienda()).orElse(null);
+            DimTienda tienda = tiendaRepository.findById(dto.getIdTienda()).orElse(null);
 
             empleado.setIdEmpleado(dto.getIdEmpleado());
             empleado.setNombre(dto.getNombre());
@@ -110,7 +110,7 @@ public class EmpleadoETLService {
         cargarEmpleadosOLAP(empleadosTransformados);
     }
 
-    public List<dimEmpleado> getAllEmpleados() {
+    public List<DimEmpleado> getAllEmpleados() {
         return dimEmpleadoRepository.findAll();
     }
 }

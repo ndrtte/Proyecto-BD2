@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Entity
 @Table(name = "tbl_tiempo")
-public class dimTiempo {
+public class DimTiempo {
     @Id
     @Column(name = "id_fecha")
     private Integer idTiempo;

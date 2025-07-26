@@ -9,7 +9,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import hn.unah.proyecto.dto.CiudadDTO;
-import hn.unah.proyecto.entidades.olap.dimCiudad;
+import hn.unah.proyecto.entidades.olap.DimCiudad;
 import hn.unah.proyecto.repositorios.olap.DimCiudadRepository;
 import hn.unah.proyecto.repositorios.oltp.CityRepository;
 
@@ -46,10 +46,10 @@ public class CiudadETLService {
 
     private void cargarCiudadesOLAP(List<CiudadDTO> ciudadesDTO) {
 
-        List<dimCiudad> ciudadesDestino = new ArrayList<>();
+        List<DimCiudad> ciudadesDestino = new ArrayList<>();
 
         for (CiudadDTO dto : ciudadesDTO){
-            dimCiudad entidad = new dimCiudad();
+            DimCiudad entidad = new DimCiudad();
             entidad.setIdCiudad((dto.getId()));
             entidad.setNombreCiudad(dto.getNombre());
 
@@ -65,7 +65,7 @@ public class CiudadETLService {
         cargarCiudadesOLAP(transformadas);
     }
 
-    public List<dimCiudad> getAllCiudades() {
+    public List<DimCiudad> getAllCiudades() {
         return dimCiudadRepository.findAll();
     }
  }

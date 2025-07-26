@@ -10,11 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import hn.unah.proyecto.dto.HechosDTO;
 import hn.unah.proyecto.entidades.olap.Hechos;
-import hn.unah.proyecto.entidades.olap.dimEmpleado;
-import hn.unah.proyecto.entidades.olap.dimPelicula;
-import hn.unah.proyecto.entidades.olap.dimRenta;
-import hn.unah.proyecto.entidades.olap.dimTiempo;
-import hn.unah.proyecto.entidades.olap.dimTienda;
+import hn.unah.proyecto.entidades.olap.DimEmpleado;
+import hn.unah.proyecto.entidades.olap.DimPelicula;
+import hn.unah.proyecto.entidades.olap.DimRenta;
+import hn.unah.proyecto.entidades.olap.DimTiempo;
+import hn.unah.proyecto.entidades.olap.DimTienda;
 import hn.unah.proyecto.entidades.oltp.Rental;
 import hn.unah.proyecto.repositorios.olap.DimEmpleadoRepository;
 import hn.unah.proyecto.repositorios.olap.DimPeliculaRepository;
@@ -63,9 +63,9 @@ public class HechosAlquilerETLService {
 
             if (renta.getFechaDevolucion() == null || renta.getFechaRenta() == null) continue;
 
-            dimRenta dimRenta = dimRentaRepository.findById(renta.getId()).orElse(null);
+            DimRenta dimRenta = dimRentaRepository.findById(renta.getId()).orElse(null);
             if (dimRenta == null) {
-                dimRenta = new dimRenta();
+                dimRenta = new DimRenta();
                 dimRenta.setIdRenta(renta.getId());
                 dimRenta.setFechaRenta(renta.getFechaRenta());
                 dimRenta.setFechaDevolucion(renta.getFechaDevolucion());
@@ -73,13 +73,13 @@ public class HechosAlquilerETLService {
                 dimRentaRepository.save(dimRenta);
             } 
             
-            dimEmpleado empleado = dimEmpleadoRepository.findById(renta.getEmpleado().getId()).orElse(null);
+            DimEmpleado empleado = dimEmpleadoRepository.findById(renta.getEmpleado().getId()).orElse(null);
 
-            dimPelicula pelicula = dimPeliculaRepository.findById(renta.getInventario().getPelicula().getId()).orElse(null);
+            DimPelicula pelicula = dimPeliculaRepository.findById(renta.getInventario().getPelicula().getId()).orElse(null);
 
-            dimTienda tienda = dimTiendaRepository.findById(renta.getInventario().getTienda().getId()).orElse(null);
+            DimTienda tienda = dimTiendaRepository.findById(renta.getInventario().getTienda().getId()).orElse(null);
 
-            dimTiempo tiempo = dimTiempoRepository.findByFecha(renta.getFechaRenta());
+            DimTiempo tiempo = dimTiempoRepository.findByFecha(renta.getFechaRenta());
             if (tiempo == null) continue;
 
 

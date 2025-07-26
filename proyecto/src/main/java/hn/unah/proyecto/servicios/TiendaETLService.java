@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import hn.unah.proyecto.dto.TiendaDTO;
-import hn.unah.proyecto.entidades.olap.dimCiudad;
-import hn.unah.proyecto.entidades.olap.dimTienda;
+import hn.unah.proyecto.entidades.olap.DimCiudad;
+import hn.unah.proyecto.entidades.olap.DimTienda;
 import hn.unah.proyecto.entidades.oltp.City;
 import hn.unah.proyecto.entidades.oltp.Store;
 import hn.unah.proyecto.repositorios.olap.DimCiudadRepository;
@@ -57,13 +57,13 @@ public class TiendaETLService {
 
     private void cargarTiendasOLAP(List<TiendaDTO> tiendasDTO) {
 
-        List<dimTienda> tiendasDestino = new ArrayList<>();
+        List<DimTienda> tiendasDestino = new ArrayList<>();
 
         for (TiendaDTO dto : tiendasDTO){
         
-            dimCiudad ciudad = dimCiudadRepository.findById(dto.getIdCiudad()).orElse(null);
+            DimCiudad ciudad = dimCiudadRepository.findById(dto.getIdCiudad()).orElse(null);
 
-            dimTienda entidad = new dimTienda();
+            DimTienda entidad = new DimTienda();
             entidad.setIdTienda(dto.getIdTienda());
             entidad.setNombreTienda(dto.getNombreTienda());
             entidad.setCiudad(ciudad);
@@ -80,7 +80,7 @@ public class TiendaETLService {
         cargarTiendasOLAP(transformadas);
     }
 
-    public List<dimTienda> getAllTiendas() {
+    public List<DimTienda> getAllTiendas() {
         return dimTiendaRepository.findAll();
     }    
     

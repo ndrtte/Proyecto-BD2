@@ -9,7 +9,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import hn.unah.proyecto.dto.CategoriaDTO;
-import hn.unah.proyecto.entidades.olap.dimCategoria;
+import hn.unah.proyecto.entidades.olap.DimCategoria;
 import hn.unah.proyecto.repositorios.olap.DimCategoriaRepository;
 import hn.unah.proyecto.repositorios.oltp.CategoryRepository;
 
@@ -47,10 +47,10 @@ public class CategoriaETLService {
 
     private void cargarCategoriasOLAP(List<CategoriaDTO> categoriasDTO) {
 
-        List<dimCategoria> categorias = new ArrayList<>();
+        List<DimCategoria> categorias = new ArrayList<>();
 
         for (CategoriaDTO dto : categoriasDTO) {
-            dimCategoria entidad = new dimCategoria(
+            DimCategoria entidad = new DimCategoria(
                     dto.getId(),
                     dto.getNombre());
             categorias.add(entidad);
@@ -65,7 +65,7 @@ public class CategoriaETLService {
         cargarCategoriasOLAP(transformadas);
     }
 
-    public List<dimCategoria> getAllDimCategorias() {
+    public List<DimCategoria> getAllDimCategorias() {
         return dimCategoriaRepository.findAll();
     }
 

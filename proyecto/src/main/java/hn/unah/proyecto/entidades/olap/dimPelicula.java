@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Entity
 @Table(name = "tbl_pelicula")
-public class dimPelicula {
+public class DimPelicula {
     @Id
     @Column(name = "id_pelicula")
     private Integer idPelicula;
@@ -26,7 +26,7 @@ public class dimPelicula {
 
     @ManyToOne
     @JoinColumn(name = "id_categoria")
-    private dimCategoria categoria;
+    private DimCategoria categoria;
 
     @Column(name = "audiencia")
     private String audiencia;

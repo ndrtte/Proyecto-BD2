@@ -9,8 +9,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import hn.unah.proyecto.dto.PeliculaDTO;
-import hn.unah.proyecto.entidades.olap.dimCategoria;
-import hn.unah.proyecto.entidades.olap.dimPelicula;
+import hn.unah.proyecto.entidades.olap.DimCategoria;
+import hn.unah.proyecto.entidades.olap.DimPelicula;
 import hn.unah.proyecto.entidades.oltp.FilmCategory;
 import hn.unah.proyecto.repositorios.olap.DimCategoriaRepository;
 import hn.unah.proyecto.repositorios.olap.DimPeliculaRepository;
@@ -85,14 +85,14 @@ public class PeliculaETLService {
     }
 
     private void cargarPeliculasOLAP(List<PeliculaDTO> peliculasDTO) {
-        List<dimPelicula> peliculas = new ArrayList<>();
+        List<DimPelicula> peliculas = new ArrayList<>();
 
         for (PeliculaDTO dto : peliculasDTO) {
-            dimCategoria categoria = dimCategoriaRepository.findById(dto.getIdCategoria()).orElse(null);
+            DimCategoria categoria = dimCategoriaRepository.findById(dto.getIdCategoria()).orElse(null);
             if (categoria == null)
                 continue;
 
-            dimPelicula pelicula = new dimPelicula();
+            DimPelicula pelicula = new DimPelicula();
             pelicula.setIdPelicula(dto.getIdPelicula());
             pelicula.setTitulo(dto.getTitulo());
             pelicula.setCategoria(categoria);

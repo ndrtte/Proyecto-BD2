@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Entity
 @Table(name = "tbl_ciudad")
-public class dimCiudad {
+public class DimCiudad {
     @Id
     @Column(name = "id_ciudad")
     private Integer idCiudad;
