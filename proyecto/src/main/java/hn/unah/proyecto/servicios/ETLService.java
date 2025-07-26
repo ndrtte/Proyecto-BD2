@@ -49,19 +49,19 @@ public class ETLService {
             sqlQuery = data.getSourceTable().toUpperCase();
         }
 
-        if (data.getDestinationTable().equalsIgnoreCase("tbl_categoria")) {
+        if (tablaDestino.equalsIgnoreCase("tbl_categoria")) {
             categoriaETLService.ejecutarETL(sqlQuery);
-        } else if (data.getDestinationTable().equalsIgnoreCase("tbl_ciudad")) {
+        } else if (tablaDestino.equalsIgnoreCase("tbl_ciudad")) {
             ciudadETLService.ejecutarETL(sqlQuery);
-        } else if (data.getDestinationTable().equalsIgnoreCase("tbl_empleado")) {
+        } else if (tablaDestino.equalsIgnoreCase("tbl_empleado")) {
             empleadoETLService.ejecutarETL(sqlQuery);
-        } else if (data.getDestinationTable().equalsIgnoreCase("tbl_pelicula")) {
+        } else if (tablaDestino.equalsIgnoreCase("tbl_pelicula")) {
 
-        } else if (data.getDestinationTable().equalsIgnoreCase("tbl_renta")) {
+        } else if (tablaDestino.equalsIgnoreCase("tbl_renta")) {
 
-        } else if (data.getDestinationTable().equalsIgnoreCase("tbl_tiempo")) {
+        } else if (tablaDestino.equalsIgnoreCase("tbl_tiempo")) {
 
-        } else if (data.getDestinationTable().equalsIgnoreCase("tbl_tienda")) {
+        } else if (tablaDestino.equalsIgnoreCase("tbl_tienda")) {
 
         } else {
             // Si la tabla destino no es ninguna de las anteriores, mando mensaje al front
