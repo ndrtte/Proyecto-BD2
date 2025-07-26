@@ -1,6 +1,5 @@
 package hn.unah.proyecto.repositorios.olap;
 
-import java.time.LocalDate;
 import java.util.Date;
 
 import org.springframework.data.jpa.repository.JpaRepository;
