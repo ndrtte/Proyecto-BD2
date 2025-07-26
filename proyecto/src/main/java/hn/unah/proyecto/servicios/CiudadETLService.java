@@ -25,9 +25,9 @@ public class CiudadETLService {
         return cityRepository.findAll();
     }
 
-    private List<dimCiudad> extraerCiudadesOLAP() {
-        return dimCiudadRepository.findAll();
-    }
+    // private List<dimCiudad> extraerCiudadesOLAP() {
+    //     return dimCiudadRepository.findAll();
+    // }
 
     public List<CiudadDTO> transformarCiudades(List<City> ciudadesOrigen){
 

@@ -22,25 +22,13 @@ import hn.unah.proyecto.repositorios.olap.DimRentaRepository;
 import hn.unah.proyecto.repositorios.olap.DimTiempoRepository;
 import hn.unah.proyecto.repositorios.olap.DimTiendaRepository;
 import hn.unah.proyecto.repositorios.olap.HechosAlquilerRepository;
-import hn.unah.proyecto.repositorios.oltp.FilmRepository;
 import hn.unah.proyecto.repositorios.oltp.PaymentRepository;
 import hn.unah.proyecto.repositorios.oltp.RentalRepository;
-import hn.unah.proyecto.repositorios.oltp.StaffRepository;
-import hn.unah.proyecto.repositorios.oltp.StoreRepository;
 
 public class HechosAlquilerETLService {
     
     @Autowired
     private RentalRepository rentalRepository;
-
-    @Autowired
-    private StaffRepository staffRepository;
-
-    @Autowired
-    private FilmRepository filmRepository;
-
-    @Autowired
-    private StoreRepository storeRepository;
 
     @Autowired
     private PaymentRepository paymentRepository;
@@ -171,7 +159,7 @@ public class HechosAlquilerETLService {
 
     /*--- No entiendo la mayoría de esas cosas, pero tratare de encapsularlo xD ---*/
     public void ejecutarETL() {
-        List<Rental> rentasOLTP = rentalRepository.findAll();
+        List<Rental> rentasOLTP = extraerRentasOLTP();
         List<Hechos> hechosOLAP = hechosRepository.findAll();
 
         // Mapa de rentas OLTP
