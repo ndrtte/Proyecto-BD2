@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Hechos {
+public class HechosDTO {
 
     private Integer id_hechos;
     private Integer idRenta;
@@ -20,6 +20,7 @@ public class Hechos {
 
     private Double montoPago;
     private String audiencia; //clasificacion
-    private Double cantidad;
+    private Integer cantidad;
     private Double tiempoRenta;
+    private String unidadTiempo;
 }

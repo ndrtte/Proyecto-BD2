@@ -12,7 +12,7 @@ import hn.unah.proyecto.entidades.olap.dimPelicula;
 import hn.unah.proyecto.entidades.oltp.Film;
 import hn.unah.proyecto.entidades.oltp.FilmCategory;
 import hn.unah.proyecto.repositorios.olap.DimCategoriaRepository;
-import hn.unah.proyecto.repositorios.olap.DimPeliculaReposiory;
+import hn.unah.proyecto.repositorios.olap.DimPeliculaRepository;
 import hn.unah.proyecto.repositorios.oltp.FilmCategoryRepository;
 import hn.unah.proyecto.repositorios.oltp.FilmRepository;
 
@@ -26,7 +26,7 @@ public class PeliculaETLService {
     private FilmCategoryRepository filmCategoryRepository;
 
     @Autowired
-    private DimPeliculaReposiory dimPeliculaReposiory;
+    private DimPeliculaRepository dimPeliculaReposiory;
 
     @Autowired
     private DimCategoriaRepository dimCategoriaRepository;
