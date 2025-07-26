@@ -26,7 +26,7 @@ public class EmpleadoETLService {
     @Autowired
     private DimEmpleadoRepository dimEmpleadoRepository;
 
-    private List<Staff> extraerEmpleadosOLTP() {
+    private List<Staff> extraerEmpleadosOLTP(String sqlQuery) {
         return staffRepository.findAll();
     }
 
@@ -70,11 +70,11 @@ public class EmpleadoETLService {
             empleados.add(empleado);
         }
 
-        dimEmpleadoRepository.saveAll(empleados);        
+        dimEmpleadoRepository.saveAll(empleados);
     }
 
-    public void ejecutarETL() {
-        List<Staff> empleadosOrigen = extraerEmpleadosOLTP();
+    public void ejecutarETL(String sqlQuery) {
+        List<Staff> empleadosOrigen = extraerEmpleadosOLTP(sqlQuery);
         List<EmpleadoDTO> empleadosTransformados = transformarEmpleado(empleadosOrigen);
         cargarEmpleadosOLAP(empleadosTransformados);
     }

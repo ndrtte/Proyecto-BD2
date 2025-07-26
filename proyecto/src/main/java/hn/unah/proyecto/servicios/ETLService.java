@@ -12,7 +12,6 @@ import hn.unah.proyecto.dto.MigrationDataDTO;
 @Service
 public class ETLService {
 
-
     private String tablaDestino = "";
 
     @Autowired
@@ -26,6 +25,8 @@ public class ETLService {
     @Autowired
     private CiudadETLService ciudadETLService;
 
+    @Autowired
+    private EmpleadoETLService empleadoETLService;
 
     public List<String> obtenerColumnas(String sourceTable) {
         String tablaOrigen = sourceTable.toUpperCase();
@@ -40,30 +41,32 @@ public class ETLService {
     public String migracionDatos(MigrationDataDTO data) {
 
         tablaDestino = data.getDestinationTable().toUpperCase();
-        if(data.getMethod().equalsIgnoreCase("Table")) {
-            String sqlQuery = consultaPorTabla(data);
-            
-            if(data.getDestinationTable().equalsIgnoreCase("tbl_categoria")) {
-                categoriaETLService.ejecutarETLTabla(sqlQuery);
-            }else if (data.getDestinationTable().equalsIgnoreCase("tbl_ciudad")) {
-                ciudadETLService.ejecutarETL(sqlQuery);
-            } else if (data.getDestinationTable().equalsIgnoreCase("tbl_empleado")) {
+        String sqlQuery;
+        if (data.getMethod().equalsIgnoreCase("Table")) {
+            sqlQuery = consultaPorTabla(data);
 
-            } else if (data.getDestinationTable().equalsIgnoreCase("tbl_pelicula")) {
-
-            } else if (data.getDestinationTable().equalsIgnoreCase("tbl_renta")) {
-
-            } else if (data.getDestinationTable().equalsIgnoreCase("tbl_tiempo")) {
-
-            } else if (data.getDestinationTable().equalsIgnoreCase("tbl_tienda")) {
-
-            }else {
-                //Si la tabla destino no es ninguna de las anteriores, mando mensaje al front
-            }
+        } else {
+            sqlQuery = data.getSourceTable().toUpperCase();
         }
-        else {
-            
+
+        if (data.getDestinationTable().equalsIgnoreCase("tbl_categoria")) {
+            categoriaETLService.ejecutarETL(sqlQuery);
+        } else if (data.getDestinationTable().equalsIgnoreCase("tbl_ciudad")) {
+            ciudadETLService.ejecutarETL(sqlQuery);
+        } else if (data.getDestinationTable().equalsIgnoreCase("tbl_empleado")) {
+            empleadoETLService.ejecutarETL(sqlQuery);
+        } else if (data.getDestinationTable().equalsIgnoreCase("tbl_pelicula")) {
+
+        } else if (data.getDestinationTable().equalsIgnoreCase("tbl_renta")) {
+
+        } else if (data.getDestinationTable().equalsIgnoreCase("tbl_tiempo")) {
+
+        } else if (data.getDestinationTable().equalsIgnoreCase("tbl_tienda")) {
+
+        } else {
+            // Si la tabla destino no es ninguna de las anteriores, mando mensaje al front
         }
+
         return "";
     }
 
@@ -75,7 +78,7 @@ public class ETLService {
         for (String columna : data.getListColumn()) {
             columnas = columnas + columna.toUpperCase();
             i++;
-            if(i < tamanio){
+            if (i < tamanio) {
                 columnas += ", ";
             }
         }

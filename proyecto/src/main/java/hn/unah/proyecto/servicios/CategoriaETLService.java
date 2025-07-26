@@ -59,7 +59,7 @@ public class CategoriaETLService {
         dimCategoriaRepository.saveAll(categorias);
     }
 
-    public void ejecutarETLTabla(String sqlQuery) {
+    public void ejecutarETL(String sqlQuery) {
         List<Map<String, Object>> origen = extraerCategoriasOLTP(sqlQuery);
         List<CategoriaDTO> transformadas = transformarCategorias(origen);
         cargarCategoriasOLAP(transformadas);
