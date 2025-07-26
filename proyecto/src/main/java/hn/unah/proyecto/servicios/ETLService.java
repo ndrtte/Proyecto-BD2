@@ -23,6 +23,9 @@ public class ETLService {
     @Autowired
     private CategoriaETLService categoriaETLService;
 
+    @Autowired
+    private CiudadETLService ciudadETLService;
+
 
     public List<String> obtenerColumnas(String sourceTable) {
         String tablaOrigen = sourceTable.toUpperCase();
@@ -43,7 +46,7 @@ public class ETLService {
             if(data.getDestinationTable().equalsIgnoreCase("tbl_categoria")) {
                 categoriaETLService.ejecutarETLTabla(sqlQuery);
             }else if (data.getDestinationTable().equalsIgnoreCase("tbl_ciudad")) {
-
+                ciudadETLService.ejecutarETL(sqlQuery);
             } else if (data.getDestinationTable().equalsIgnoreCase("tbl_empleado")) {
 
             } else if (data.getDestinationTable().equalsIgnoreCase("tbl_pelicula")) {

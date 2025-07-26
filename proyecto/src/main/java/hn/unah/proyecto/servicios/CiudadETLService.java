@@ -2,13 +2,14 @@ package hn.unah.proyecto.servicios;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import hn.unah.proyecto.dto.CiudadDTO;
 import hn.unah.proyecto.entidades.olap.dimCiudad;
-import hn.unah.proyecto.entidades.oltp.City;
 import hn.unah.proyecto.repositorios.olap.DimCiudadRepository;
 import hn.unah.proyecto.repositorios.oltp.CityRepository;
 
@@ -19,25 +20,24 @@ public class CiudadETLService {
     private CityRepository cityRepository;
 
     @Autowired
-    private DimCiudadRepository dimCiudadRepository; 
+    private DimCiudadRepository dimCiudadRepository;
 
-    private List<City> extraerCiudadesOLTP() {
-        return cityRepository.findAll();
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    private List<Map<String, Object>> extraerCiudadesOLTP(String sqlQuery) {
+        List<Map<String, Object>> registros = jdbcTemplate.queryForList(sqlQuery);
+        return registros;
     }
 
-    // private List<dimCiudad> extraerCiudadesOLAP() {
-    //     return dimCiudadRepository.findAll();
-    // }
-
-    public List<CiudadDTO> transformarCiudades(List<City> ciudadesOrigen){
-
+    public List<CiudadDTO> transformarCiudades(List<Map<String, Object>> ciudadesOrigen){
         List<CiudadDTO> ciudadesDTO = new ArrayList<>();
 
-        for (City ciudad : ciudadesOrigen) {
-            CiudadDTO dto = new CiudadDTO();
-            dto.setId(ciudad.getId());
-            dto.setNombre(ciudad.getNombre());
-
+        for ( Map<String, Object> fila : ciudadesOrigen) {
+            Integer id = ((Number) fila.get("CITY_ID")).intValue();
+            String nombre = fila.get("CITY").toString();
+            
+            CiudadDTO dto = new CiudadDTO(id, nombre);
             ciudadesDTO.add(dto);
         }   
         
@@ -59,8 +59,8 @@ public class CiudadETLService {
         dimCiudadRepository.saveAll(ciudadesDestino);
     }
 
-    public void ejecutarETL() {
-        List<City> origen = extraerCiudadesOLTP();
+    public void ejecutarETL(String sqlQuery) {
+         List<Map<String, Object>> origen = extraerCiudadesOLTP(sqlQuery);
         List<CiudadDTO> transformadas = transformarCiudades(origen);
         cargarCiudadesOLAP(transformadas);
     }
