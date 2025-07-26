@@ -261,12 +261,33 @@ async function runETLQuery(sqlQuery) {
     addStatusMessage(`Ejecutando consulta SQL:`);
     addStatusMessage(sqlQuery, 'warning');
 
-    // Para consultas SQL, se necesita implementar un endpoint diferente
-    // Por ahora se muestra la funcionalidad disponible
+    const migrationData = {
+        sourceTable: document.getElementById('sql-query').value,
+        destinationTable: selectedDestinationTable,
+        listColumn: selectedColumns,
+        method: selectedMethod
+    };
     try {
-        // Aquí se debería hacer la llamada al endpoint correspondiente
 
-        addStatusMessage('Esta funcionalidad aún no está implementada', 'error');
+        const response = await fetch('http://localhost:8080/api/etl/migrar/datos', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(migrationData)
+        });
+
+        if (response.ok) {
+            const result = await response.text();
+            addStatusMessage('Migración completada exitosamente', 'success');
+            if (result && result.trim()) {
+                addStatusMessage(`Resultado: ${result}`, 'success');
+            }
+        } else {
+            const errorText = await response.text();
+            addStatusMessage(`Error en la migración: ${errorText}`, 'error');
+        }
+
     } catch (error) {
         console.error('Error:', error);
         addStatusMessage('Error de conexión al servidor', 'error');

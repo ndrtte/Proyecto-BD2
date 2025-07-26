@@ -54,7 +54,7 @@ public class ETLService {
         } else if (tablaDestino.equalsIgnoreCase("tbl_ciudad")) {
             ciudadETLService.ejecutarETL(sqlQuery);
         } else if (tablaDestino.equalsIgnoreCase("tbl_empleado")) {
-            empleadoETLService.ejecutarETL(sqlQuery);
+            
         } else if (tablaDestino.equalsIgnoreCase("tbl_pelicula")) {
 
         } else if (tablaDestino.equalsIgnoreCase("tbl_renta")) {
