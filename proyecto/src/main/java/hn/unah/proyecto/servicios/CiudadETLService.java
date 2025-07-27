@@ -63,7 +63,7 @@ public class CiudadETLService {
     }
 
     public void ejecutarETL(String sqlQuery) {
-         List<Map<String, Object>> origen = extraerCiudadesOLTP(sqlQuery);
+        List<Map<String, Object>> origen = extraerCiudadesOLTP(sqlQuery);
         List<CiudadDTO> transformadas = transformarCiudades(origen);
         cargarCiudadesOLAP(transformadas);
     }

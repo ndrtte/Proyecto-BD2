@@ -36,7 +36,7 @@ public class RentaETLService {
         return registros;
     }
 
-    /*Luego lo podemos agregar en utils */
+    /* Luego lo podemos agregar en utils */
     private Date convertirFecha(Object valor) {
         if (valor instanceof Timestamp) {
             return new Date(((Timestamp) valor).getTime());
