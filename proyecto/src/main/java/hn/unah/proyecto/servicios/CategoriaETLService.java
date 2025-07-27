@@ -12,6 +12,7 @@ import hn.unah.proyecto.dto.CategoriaDTO;
 import hn.unah.proyecto.entidades.olap.DimCategoria;
 import hn.unah.proyecto.repositorios.olap.DimCategoriaRepository;
 import hn.unah.proyecto.repositorios.oltp.CategoryRepository;
+import hn.unah.proyecto.util.IncrementalETLHelper;
 
 @Service
 public class CategoriaETLService {
@@ -69,4 +70,19 @@ public class CategoriaETLService {
         return dimCategoriaRepository.findAll();
     }
 
+    public void sincronizarETL(String sqlQuery) {
+        List<Map<String, Object>> origen = extraerCategoriasOLTP(sqlQuery);
+        List<CategoriaDTO> categoriasDTO = transformarCategorias(origen);
+        List<DimCategoria> existentes = dimCategoriaRepository.findAll();
+
+        IncrementalETLHelper.sincronizar(
+            categoriasDTO,
+            existentes,
+            dto -> new DimCategoria(dto.getId(), dto.getNombre()),          
+            DimCategoria::getIdCategoria,
+            entidad -> new CategoriaDTO(entidad.getIdCategoria(), entidad.getNombreCategoria()),
+            lista -> dimCategoriaRepository.saveAll(lista),
+            lista -> dimCategoriaRepository.deleteAll(lista)
+        );
+    }
 }

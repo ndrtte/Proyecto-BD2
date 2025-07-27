@@ -24,7 +24,8 @@ public class CategoriaDTO implements IdentificableDTO{
         if (this == o) return true;
         if (!(o instanceof CategoriaDTO)) return false;
         CategoriaDTO other = (CategoriaDTO) o;
-        return id.equals(other.id) && nombre.equals(other.nombre);
+        return id != null && id.equals(other.id) 
+            && nombre.equals(other.nombre);
     }
 
     @Override
