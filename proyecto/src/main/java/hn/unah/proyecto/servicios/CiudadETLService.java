@@ -72,6 +72,8 @@ public class CiudadETLService {
         return dimCiudadRepository.findAll();
     }
 
+    
+    /*
     public void sincronizarETL(String sqlQuery) {
         List<Map<String, Object>> origen = extraerCiudadesOLTP(sqlQuery);
         List<CiudadDTO> ciudadesDTO = transformarCiudades(origen);
@@ -86,5 +88,6 @@ public class CiudadETLService {
             lista -> dimCiudadRepository.saveAll(lista),
             lista -> dimCiudadRepository.deleteAll(lista)
         );
-    }    
+    }   */
+    
 }

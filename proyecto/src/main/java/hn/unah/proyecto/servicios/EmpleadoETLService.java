@@ -45,10 +45,10 @@ public class EmpleadoETLService {
         for (Map<String, Object> empleado : empleadosOrigen) {
             EmpleadoDTO dto = new EmpleadoDTO();
 
-            Integer id = (Integer) empleado.get("staff_id");
-            String nombre = (String) empleado.get("first_name");
-            String apellido = (String) empleado.get("last_name");
-            Integer idTienda = (Integer) empleado.get("store_id");
+            Integer id = ((Number) empleado.get("STAFF_ID")).intValue();
+            String nombre = (String) empleado.get("FIRST_NAME");
+            String apellido = (String) empleado.get("LAST_NAME");
+            Integer idTienda = ((Number) empleado.get("STORE_ID")).intValue();
 
             dto.setIdEmpleado(id);
             dto.setNombre(nombre + " " + apellido);
@@ -66,9 +66,9 @@ public class EmpleadoETLService {
         for (Map<String, Object> empleado : empleadosOrigen) {
             EmpleadoDTO dto = new EmpleadoDTO();
 
-            dto.setIdEmpleado((Integer) empleado.get("idEmpleado"));
+            dto.setIdEmpleado(((Number) empleado.get("idEmpleado")).intValue());
             dto.setNombre((String) empleado.get("nombre"));
-            dto.setIdTienda((Integer) empleado.get("idTienda"));
+            dto.setIdTienda(((Number) empleado.get("idTienda")).intValue());
 
             empleadosTransformados.add(dto);
         }
@@ -117,6 +117,7 @@ public class EmpleadoETLService {
         return dimEmpleadoRepository.findAll();
     }
 
+    /* 
     public void sincronizarETL(String sqlQuery) {
         List<Map<String, Object>> origen = extraerEmpleadosOLTP(sqlQuery);
         List<EmpleadoDTO> empleadosDTO = transformarEmpleadoTabla(origen);
@@ -134,5 +135,5 @@ public class EmpleadoETLService {
             lista -> dimEmpleadoRepository.saveAll(lista),
             lista -> dimEmpleadoRepository.deleteAll(lista)
         );
-    }    
+    }    */
 }

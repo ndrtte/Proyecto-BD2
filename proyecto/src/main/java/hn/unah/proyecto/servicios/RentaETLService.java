@@ -54,8 +54,6 @@ public class RentaETLService {
         for (Map<String, Object> renta : rentasOrigen) {
             RentaDTO dtoRenta = new RentaDTO();
             Integer id = ((Number) renta.get("RENTAL_ID")).intValue();
-            // Date fechaRenta = (Date) renta.get("RENTAL_DATE");
-            // Date fechaDev = (Date) renta.get("RETURN_DATE");
             Date fechaRenta = convertirFecha(renta.get("RENTAL_DATE"));
             Date fechaDev = convertirFecha(renta.get("RETURN_DATE"));
             
@@ -65,7 +63,7 @@ public class RentaETLService {
             rentasDTO.add(dtoRenta);
         }
         return rentasDTO;
-    } 
+    }
 
     private void cargarRentasOLAP(List<RentaDTO> rentasDTO) {
 

@@ -37,6 +37,9 @@ public class ETLService {
     @Autowired
     private TiempoETLService tiempoETLService;
 
+    @Autowired
+    private TiendaETLService tiendaETLService;
+
     public List<String> obtenerColumnas(String sourceTable) {
         String tablaOrigen = sourceTable.toUpperCase();
 
@@ -72,7 +75,7 @@ public class ETLService {
         } else if (tablaDestino.equalsIgnoreCase("tbl_tiempo")) {
             tiempoETLService.ejecutarETL(sqlQuery);
         } else if (tablaDestino.equalsIgnoreCase("tbl_tienda")) {
-
+            tiendaETLService.ejecutarETL(sqlQuery);
         } else {
             // Si la tabla destino no es ninguna de las anteriores, mando mensaje al front
         }

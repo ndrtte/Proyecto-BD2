@@ -35,7 +35,5 @@ public class EtlController {
         return etlService.migracionDatos(data);
     }
     
-    @Autowired
-    private CategoriaETLService categoriaETLService;
 
 }

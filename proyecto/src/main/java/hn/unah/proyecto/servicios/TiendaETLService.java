@@ -2,8 +2,10 @@ package hn.unah.proyecto.servicios;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import hn.unah.proyecto.dto.TiendaDTO;
@@ -27,61 +29,66 @@ public class TiendaETLService {
 
     @Autowired
     private DimCiudadRepository dimCiudadRepository;
-    
+
     @Autowired
     private CityRepository cityRepository;
 
-    private List<Store> extraerTiendasOLTP(){
-        return storeRepository.findAll();
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    private  List<Map<String, Object>> extraerTiendasOLTP(String sqlQuery) {
+        List<Map<String, Object>> registros = jdbcTemplate.queryForList(sqlQuery);
+        return registros;
     }
 
-    public List<TiendaDTO> transformarRentas(List<Store> tiendasOrigen) {
-
+    private List<TiendaDTO> transformarTiendas(List<Map<String, Object>> tiendasOrigen) {
         List<TiendaDTO> tiendasDTO = new ArrayList<>();
+        int i = 1;
 
-        for (Store tienda : tiendasOrigen) {
-            TiendaDTO dtoTienda = new TiendaDTO();
+        for (Map<String, Object> row : tiendasOrigen) {
+            TiendaDTO dto = new TiendaDTO();
 
-            City city = cityRepository.findById(tienda.getId()).orElse(null);
-            Integer idCiudad = city.getId();
+            Integer idTienda = ((Number) row.get("STORE_ID")).intValue();
+            Integer idCiudad = ((Number) row.get("CITY_ID")).intValue();
 
-            dtoTienda.setIdTienda(tienda.getId());
-            dtoTienda.setNombreTienda(dtoTienda.getNombreTienda());
-            dtoTienda.setIdTienda(idCiudad);
+            dto.setIdTienda(idTienda);
+            dto.setIdCiudad(idCiudad);
+            dto.setNombreTienda("Tienda " + i);
+            i++;
 
+            tiendasDTO.add(dto);
+        }
 
-            tiendasDTO.add(dtoTienda);
-        }        
         return tiendasDTO;
-    } 
+    }
 
     private void cargarTiendasOLAP(List<TiendaDTO> tiendasDTO) {
 
         List<DimTienda> tiendasDestino = new ArrayList<>();
 
-        for (TiendaDTO dto : tiendasDTO){
-        
+        for (TiendaDTO dto : tiendasDTO) {
+
             DimCiudad ciudad = dimCiudadRepository.findById(dto.getIdCiudad()).orElse(null);
 
             DimTienda entidad = new DimTienda();
             entidad.setIdTienda(dto.getIdTienda());
             entidad.setNombreTienda(dto.getNombreTienda());
             entidad.setCiudad(ciudad);
-            
+
             tiendasDestino.add(entidad);
         }
 
         dimTiendaRepository.saveAll(tiendasDestino);
     }
 
-    public void ejecutarETL() {
-        List<Store> origen = extraerTiendasOLTP();
-        List<TiendaDTO> transformadas = transformarRentas(origen);
+    public void ejecutarETL(String sqlQuery) {
+        List<Map<String, Object>> origen = extraerTiendasOLTP(sqlQuery);
+        List<TiendaDTO> transformadas = transformarTiendas(origen);
         cargarTiendasOLAP(transformadas);
     }
 
     public List<DimTienda> getAllTiendas() {
         return dimTiendaRepository.findAll();
-    }    
-    
+    }
+
 }
