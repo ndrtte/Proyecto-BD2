@@ -31,5 +31,5 @@ public class CategoriaDTO implements IdentificableDTO{
     @Override
     public int hashCode() {
         return Objects.hash(id, nombre);
-    }    
+    }
 }

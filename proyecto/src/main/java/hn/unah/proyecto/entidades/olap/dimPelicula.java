@@ -28,10 +28,6 @@ public class DimPelicula {
     @Column(name = "titulo")
     private String titulo;
 
-    @ManyToOne
-    @JoinColumn(name = "id_categoria")
-    private DimCategoria categoria;
-
     @Column(name = "audiencia")
     private String audiencia;
 

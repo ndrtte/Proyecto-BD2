@@ -77,38 +77,28 @@ public class PeliculaETLService {
 
     private List<PeliculaDTO> transformarPeliculasConsulta(List<Map<String, Object>> datos) {
         List<PeliculaDTO> peliculasDTO = new ArrayList<>();
-        /*
-         * for (Map<String, Object> fila : datos) {
-         * PeliculaDTO dto = new PeliculaDTO();
-         * 
-         * dto.setIdPelicula(((Number) fila.get("ID_PELICULA")).intValue());
-         * dto.setTitulo((String) fila.get("TITULO"));
-         * dto.setIdCategoria(((Integer) fila.get("ID_CATEGORIA")).intValue());
-         * dto.setAudiencia((String) fila.get("AUDIENCIA"));
-         * 
-         * peliculasDTO.add(dto);
-         * }
-         */
-
         return peliculasDTO;
     }
 
     private void cargarPeliculasOLAP(List<PeliculaDTO> peliculasDTO) {
         List<DimPelicula> peliculas = new ArrayList<>();
 
+
         for (PeliculaDTO dto : peliculasDTO) {
-            if (dto.getCategoria().isEmpty())
-                continue;
-
-            CategoriaDTO catDTO = dto.getCategoria().get(0);
-            DimCategoria categoria = dimCategoriaRepository.findById(catDTO.getId()).orElse(null);
-            if (categoria == null)
-                continue;
-
             DimPelicula pelicula = new DimPelicula();
+            List<DimCategoria> categories = new ArrayList<>();
+            List<CategoriaDTO> categoriasDTO = dto.getCategoria();
+
+            for (CategoriaDTO categoriaDTO: categoriasDTO) {
+                DimCategoria dimCategoria = new DimCategoria();
+                dimCategoria.setIdCategoria(categoriaDTO.getId());
+                dimCategoria.setNombreCategoria(categoriaDTO.getNombre());
+                categories.add(dimCategoria);
+            }
+
             pelicula.setIdPelicula(dto.getIdPelicula());
+            pelicula.setDimCategorias(categories);
             pelicula.setTitulo(dto.getTitulo());
-            pelicula.setCategoria(categoria);
             pelicula.setAudiencia(dto.getAudiencia());
 
             peliculas.add(pelicula);
@@ -129,27 +119,4 @@ public class PeliculaETLService {
 
         cargarPeliculasOLAP(peliculasTransformadas);
     }
-
-    /*
-     * public void sincronizarETL(String sqlQuery) {
-     * List<Map<String, Object>> origen = extraerPeliculas(sqlQuery);
-     * List<PeliculaDTO> peliculasDTO = transformarPeliculasTabla(origen);
-     * List<DimPelicula> existentes = dimPeliculaRepository.findAll();
-     * 
-     * IncrementalETLHelper.sincronizar(
-     * peliculasDTO,
-     * existentes,
-     * dto -> {
-     * DimCategoria categoria =
-     * dimCategoriaRepository.findById(dto.getId()).orElse(null);
-     * return new DimPelicula(dto.getIdPelicula(), dto.getTitulo(), categoria,
-     * dto.getAudiencia());
-     * },
-     * DimPelicula::getIdPelicula,
-     * entidad -> new PeliculaDTO(entidad.getIdPelicula(), entidad.getTitulo(),
-     * entidad.getCategoria().getIdCategoria(), entidad.getAudiencia()),
-     * lista -> dimPeliculaRepository.saveAll(lista),
-     * lista -> dimPeliculaRepository.deleteAll(lista));
-     * }
-     */
 }
