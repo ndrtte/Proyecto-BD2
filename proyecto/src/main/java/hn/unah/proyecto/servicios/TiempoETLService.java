@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -13,10 +14,14 @@ import java.time.format.TextStyle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import hn.unah.proyecto.dto.RentaDTO;
+import hn.unah.proyecto.dto.TiempoDTO;
+import hn.unah.proyecto.entidades.olap.DimRenta;
 import hn.unah.proyecto.entidades.olap.DimTiempo;
 import hn.unah.proyecto.entidades.oltp.Rental;
 import hn.unah.proyecto.repositorios.olap.DimTiempoRepository;
 import hn.unah.proyecto.repositorios.oltp.RentalRepository;
+import hn.unah.proyecto.util.IncrementalETLHelper;
 
 @Service
 public class TiempoETLService {
@@ -83,6 +88,35 @@ public class TiempoETLService {
     public List<DimTiempo> getAllDimTiempo() {
         return dimTiempoRepository.findAll();
     }
+
+    public void sincronizarETL(String sqlQuery) {
+        // // Este cambio lo genero copilot
+        List<Date> fechas = extraerFechasRenta();
+        List<DimTiempo> tiemposTransformados = transformarFechas(fechas);
+        List<TiempoDTO> fechasDTO = new ArrayList<>();
+        for (DimTiempo tiempo : tiemposTransformados) {
+            fechasDTO.add(new TiempoDTO(
+                tiempo.getIdTiempo(),
+                tiempo.getFecha(),
+                tiempo.getDiaSemana(),
+                tiempo.getMes(),
+                tiempo.getAnio(),
+                tiempo.getTrimestre()
+            ));
+        }
+        //Logica del uso del metodo sincronizar() de todos los services
+        List<DimTiempo> existentes = dimTiempoRepository.findAll();
+        
+        IncrementalETLHelper.sincronizar(
+            fechasDTO,
+            existentes,
+            dto -> new DimTiempo(dto.getIdTiempo(), dto.getFecha(), dto.getDiaSemana(), dto.getMes(), dto.getAnio(), dto.getTrimestre()),
+            DimTiempo::getIdTiempo,
+            entidad -> new TiempoDTO(entidad.getIdTiempo(), entidad.getFecha(), entidad.getDiaSemana(), entidad.getMes(), entidad.getAnio(), entidad.getTrimestre()),
+            lista -> dimTiempoRepository.saveAll(lista),
+            lista -> dimTiempoRepository.deleteAll(lista)
+        );
+    }  
 }
 
 

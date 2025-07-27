@@ -8,16 +8,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
+// import hn.unah.proyecto.dto.CategoriaDTO;
 import hn.unah.proyecto.dto.CiudadDTO;
+// import hn.unah.proyecto.entidades.olap.DimCategoria;
 import hn.unah.proyecto.entidades.olap.DimCiudad;
 import hn.unah.proyecto.repositorios.olap.DimCiudadRepository;
-import hn.unah.proyecto.repositorios.oltp.CityRepository;
+// import hn.unah.proyecto.repositorios.oltp.CityRepository;
+import hn.unah.proyecto.util.IncrementalETLHelper;
 
 @Service
 public class CiudadETLService {
     
-    @Autowired
-    private CityRepository cityRepository;
+    // @Autowired
+    // private CityRepository cityRepository;
 
     @Autowired
     private DimCiudadRepository dimCiudadRepository;
@@ -68,4 +71,20 @@ public class CiudadETLService {
     public List<DimCiudad> getAllCiudades() {
         return dimCiudadRepository.findAll();
     }
- }
+
+    public void sincronizarETL(String sqlQuery) {
+        List<Map<String, Object>> origen = extraerCiudadesOLTP(sqlQuery);
+        List<CiudadDTO> ciudadesDTO = transformarCiudades(origen);
+        List<DimCiudad> existentes = dimCiudadRepository.findAll();
+
+        IncrementalETLHelper.sincronizar(
+            ciudadesDTO,
+            existentes,
+            dto -> new DimCiudad(dto.getId(), dto.getNombre()),          
+            DimCiudad::getIdCiudad,
+            entidad -> new CiudadDTO(entidad.getIdCiudad(), entidad.getNombreCiudad()),
+            lista -> dimCiudadRepository.saveAll(lista),
+            lista -> dimCiudadRepository.deleteAll(lista)
+        );
+    }    
+}

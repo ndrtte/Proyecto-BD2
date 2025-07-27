@@ -11,14 +11,14 @@ import org.springframework.stereotype.Service;
 import hn.unah.proyecto.dto.CategoriaDTO;
 import hn.unah.proyecto.entidades.olap.DimCategoria;
 import hn.unah.proyecto.repositorios.olap.DimCategoriaRepository;
-import hn.unah.proyecto.repositorios.oltp.CategoryRepository;
+// import hn.unah.proyecto.repositorios.oltp.CategoryRepository;
 import hn.unah.proyecto.util.IncrementalETLHelper;
 
 @Service
 public class CategoriaETLService {
 
-    @Autowired
-    private CategoryRepository categoryRepository;
+    // @Autowired
+    // private CategoryRepository categoryRepository;
 
     @Autowired
     private DimCategoriaRepository dimCategoriaRepository;

@@ -35,5 +35,4 @@ public class DimTiempo {
 
     @Column(name = "trimestre")
     private Integer trimestre;
-
 }

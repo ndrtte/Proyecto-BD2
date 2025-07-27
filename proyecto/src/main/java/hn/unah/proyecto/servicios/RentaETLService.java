@@ -9,17 +9,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
+// import hn.unah.proyecto.dto.CategoriaDTO;
 import hn.unah.proyecto.dto.RentaDTO;
+// import hn.unah.proyecto.entidades.olap.DimCategoria;
 import hn.unah.proyecto.entidades.olap.DimRenta;
-import hn.unah.proyecto.entidades.oltp.Rental;
+// import hn.unah.proyecto.entidades.oltp.Rental;
 import hn.unah.proyecto.repositorios.olap.DimRentaRepository;
-import hn.unah.proyecto.repositorios.oltp.RentalRepository;
+// import hn.unah.proyecto.repositorios.oltp.RentalRepository;
+import hn.unah.proyecto.util.IncrementalETLHelper;
 
 @Service
 public class RentaETLService {
     
-    @Autowired
-    private RentalRepository rentalRepository;
+    // @Autowired
+    // private RentalRepository rentalRepository;
 
     @Autowired
     private DimRentaRepository dimRentaRepository;
@@ -76,4 +79,20 @@ public class RentaETLService {
     public List<DimRenta> getAllCiudades() {
         return dimRentaRepository.findAll();
     }
+
+    public void sincronizarETL(String sqlQuery) {
+        List<Map<String, Object>> origen = extraerRentasOLTP(sqlQuery);
+        List<RentaDTO> rentasDTO = transformarRentas(origen);
+        List<DimRenta> existentes = dimRentaRepository.findAll();
+
+        IncrementalETLHelper.sincronizar(
+            rentasDTO,
+            existentes,
+            dto -> new DimRenta(dto.getIdRenta(), dto.getFechaRenta(), dto.getFechaDevolucion()),          
+            DimRenta::getIdRenta,
+            entidad -> new RentaDTO(entidad.getIdRenta(), entidad.getFechaRenta(), entidad.getFechaDevolucion()),
+            lista -> dimRentaRepository.saveAll(lista),
+            lista -> dimRentaRepository.deleteAll(lista)
+        );
+    }    
 }

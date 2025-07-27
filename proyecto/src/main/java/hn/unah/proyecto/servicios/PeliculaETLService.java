@@ -8,26 +8,30 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
+// import hn.unah.proyecto.dto.EmpleadoDTO;
 import hn.unah.proyecto.dto.PeliculaDTO;
 import hn.unah.proyecto.entidades.olap.DimCategoria;
+// import hn.unah.proyecto.entidades.olap.DimEmpleado;
 import hn.unah.proyecto.entidades.olap.DimPelicula;
+// import hn.unah.proyecto.entidades.olap.DimTienda;
 import hn.unah.proyecto.entidades.oltp.FilmCategory;
 import hn.unah.proyecto.repositorios.olap.DimCategoriaRepository;
 import hn.unah.proyecto.repositorios.olap.DimPeliculaRepository;
 import hn.unah.proyecto.repositorios.oltp.FilmCategoryRepository;
-import hn.unah.proyecto.repositorios.oltp.FilmRepository;
+// import hn.unah.proyecto.repositorios.oltp.FilmRepository;
+import hn.unah.proyecto.util.IncrementalETLHelper;
 
 @Service
 public class PeliculaETLService {
 
-    @Autowired
-    private FilmRepository filmRepository;
+    // @Autowired
+    // private FilmRepository filmRepository;
 
     @Autowired
     private FilmCategoryRepository filmCategoryRepository;
 
     @Autowired
-    private DimPeliculaRepository dimPeliculaReposiory;
+    private DimPeliculaRepository dimPeliculaRepository;
 
     @Autowired
     private DimCategoriaRepository dimCategoriaRepository;
@@ -101,7 +105,7 @@ public class PeliculaETLService {
             peliculas.add(pelicula);
         }
 
-        dimPeliculaReposiory.saveAll(peliculas);
+        dimPeliculaRepository.saveAll(peliculas);
     }
 
     public void ejecutarETL(String sqlQuery, String metodo) {
@@ -117,4 +121,22 @@ public class PeliculaETLService {
         cargarPeliculasOLAP(peliculasTransformadas);
     }
 
+    public void sincronizarETL(String sqlQuery) {
+        List<Map<String, Object>> origen = extraerPeliculas(sqlQuery);
+        List<PeliculaDTO> peliculasDTO = transformarPeliculasTabla(origen);
+        List<DimPelicula> existentes = dimPeliculaRepository.findAll();
+
+        IncrementalETLHelper.sincronizar(
+            peliculasDTO,
+            existentes,
+            dto -> {
+                DimCategoria categoria = dimCategoriaRepository.findById(dto.getId()).orElse(null);
+                return new DimPelicula(dto.getIdPelicula(), dto.getTitulo(), categoria, dto.getAudiencia());
+            },       
+            DimPelicula::getIdPelicula,
+            entidad -> new PeliculaDTO(entidad.getIdPelicula(), entidad.getTitulo(), entidad.getCategoria().getIdCategoria(), entidad.getAudiencia()),
+            lista -> dimPeliculaRepository.saveAll(lista),
+            lista -> dimPeliculaRepository.deleteAll(lista)
+        );
+    }
 }
