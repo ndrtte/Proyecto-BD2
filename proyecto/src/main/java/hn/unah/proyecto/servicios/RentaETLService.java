@@ -1,6 +1,7 @@
 package hn.unah.proyecto.servicios;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +36,17 @@ public class RentaETLService {
         return registros;
     }
 
+    /*Luego lo podemos agregar en utils */
+    private Date convertirFecha(Object valor) {
+        if (valor instanceof Timestamp) {
+            return new Date(((Timestamp) valor).getTime());
+        } else if (valor instanceof Date) {
+            return (Date) valor;
+        } else {
+            return null;
+        }
+    }
+
     public List<RentaDTO> transformarRentas(List<Map<String, Object>> rentasOrigen) {
 
         List<RentaDTO> rentasDTO = new ArrayList<>();
@@ -42,10 +54,11 @@ public class RentaETLService {
         for (Map<String, Object> renta : rentasOrigen) {
             RentaDTO dtoRenta = new RentaDTO();
             Integer id = ((Number) renta.get("RENTAL_ID")).intValue();
-            Date fechaRenta = (Date) renta.get("RENTAL_DATE");
-            Date fechaDev = (Date) renta.get("RETURN_DATE");
-
-
+            // Date fechaRenta = (Date) renta.get("RENTAL_DATE");
+            // Date fechaDev = (Date) renta.get("RETURN_DATE");
+            Date fechaRenta = convertirFecha(renta.get("RENTAL_DATE"));
+            Date fechaDev = convertirFecha(renta.get("RETURN_DATE"));
+            
             dtoRenta.setIdRenta(id);
             dtoRenta.setFechaRenta(fechaRenta);
             dtoRenta.setFechaDevolucion(fechaDev);
