@@ -1,6 +1,7 @@
 package hn.unah.proyecto.servicios;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -75,21 +76,50 @@ public class PeliculaETLService {
         return peliculasDTO;
     }
 
-    private List<PeliculaDTO> transformarPeliculasConsulta(List<Map<String, Object>> datos) {
+    private List<PeliculaDTO> transformarPeliculasConsulta(List<Map<String, Object>> peliculasOrigen) {
+        Map<Integer, PeliculaDTO> peliculaMap = new HashMap<>();
+
+        for (Map<String, Object> fila : peliculasOrigen) {
+            Integer idPelicula = ((Number) fila.get("FILM_ID")).intValue();
+            String titulo = (String) fila.get("TITLE");
+            String rating = (String) fila.get("RATING");
+            Integer categoriaId = ((Number) fila.get("CATEGORY_ID")).intValue();
+            String nombreCategoria = (String) fila.get("CATEGORY_NAME");
+
+            PeliculaDTO peliculaDTO = peliculaMap.get(idPelicula);
+
+            peliculaDTO = new PeliculaDTO();
+            peliculaDTO.setIdPelicula(idPelicula);
+            peliculaDTO.setTitulo(titulo);
+            peliculaDTO.setAudiencia(rating);
+            peliculaDTO.setCategoria(new ArrayList<>());
+            peliculaMap.put(idPelicula, peliculaDTO);
+
+            CategoriaDTO categoriaDTO = new CategoriaDTO();
+            categoriaDTO.setId(categoriaId);
+            categoriaDTO.setNombre(nombreCategoria);
+
+            peliculaDTO.getCategoria().add(categoriaDTO);
+        }
+
         List<PeliculaDTO> peliculasDTO = new ArrayList<>();
+        for (PeliculaDTO dto : peliculaMap.values()) {
+            peliculasDTO.add(dto);
+        }
+
         return peliculasDTO;
+
     }
 
     private void cargarPeliculasOLAP(List<PeliculaDTO> peliculasDTO) {
         List<DimPelicula> peliculas = new ArrayList<>();
-
 
         for (PeliculaDTO dto : peliculasDTO) {
             DimPelicula pelicula = new DimPelicula();
             List<DimCategoria> categories = new ArrayList<>();
             List<CategoriaDTO> categoriasDTO = dto.getCategoria();
 
-            for (CategoriaDTO categoriaDTO: categoriasDTO) {
+            for (CategoriaDTO categoriaDTO : categoriasDTO) {
                 DimCategoria dimCategoria = new DimCategoria();
                 dimCategoria.setIdCategoria(categoriaDTO.getId());
                 dimCategoria.setNombreCategoria(categoriaDTO.getNombre());
