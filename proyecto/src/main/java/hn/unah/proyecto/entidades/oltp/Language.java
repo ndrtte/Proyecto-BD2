@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "Languaje")
+@Table(name = "Language")
 public class Language {
     @Id
     @Column(name = "Language_id")

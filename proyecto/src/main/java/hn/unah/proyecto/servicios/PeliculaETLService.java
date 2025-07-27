@@ -8,27 +8,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import hn.unah.proyecto.dto.CategoriaDTO;
 // import hn.unah.proyecto.dto.EmpleadoDTO;
 import hn.unah.proyecto.dto.PeliculaDTO;
 import hn.unah.proyecto.entidades.olap.DimCategoria;
 // import hn.unah.proyecto.entidades.olap.DimEmpleado;
 import hn.unah.proyecto.entidades.olap.DimPelicula;
+import hn.unah.proyecto.entidades.oltp.Category;
+import hn.unah.proyecto.entidades.oltp.Film;
 // import hn.unah.proyecto.entidades.olap.DimTienda;
-import hn.unah.proyecto.entidades.oltp.FilmCategory;
 import hn.unah.proyecto.repositorios.olap.DimCategoriaRepository;
 import hn.unah.proyecto.repositorios.olap.DimPeliculaRepository;
-import hn.unah.proyecto.repositorios.oltp.FilmCategoryRepository;
+import hn.unah.proyecto.repositorios.oltp.FilmRepository;
 // import hn.unah.proyecto.repositorios.oltp.FilmRepository;
 import hn.unah.proyecto.util.IncrementalETLHelper;
 
 @Service
 public class PeliculaETLService {
-
-    // @Autowired
-    // private FilmRepository filmRepository;
-
-    @Autowired
-    private FilmCategoryRepository filmCategoryRepository;
 
     @Autowired
     private DimPeliculaRepository dimPeliculaRepository;
@@ -38,6 +34,9 @@ public class PeliculaETLService {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private FilmRepository filmRepository;
 
     private List<Map<String, Object>> extraerPeliculas(String sqlQuery) {
         List<Map<String, Object>> registros = jdbcTemplate.queryForList(sqlQuery);
@@ -54,12 +53,20 @@ public class PeliculaETLService {
             String titulo = (String) fila.get("TITLE");
             String clasificacion = (String) fila.get("RATING");
 
-            FilmCategory filmCategory = filmCategoryRepository.findByFilmId(filmId).get();
-            Integer idCategoria = filmCategory.getCategory().getCategoria_id();
+            Film pelicula = filmRepository.findById(filmId).get();
+            List<Category> categorias = pelicula.getCategorias();
+            List<CategoriaDTO> categoriaDTOs = new ArrayList<>();
+
+            for (Category categoria : categorias) {
+                CategoriaDTO categoriaDTO = new CategoriaDTO();
+                categoriaDTO.setId(categoria.getCategoria_id());
+                categoriaDTO.setNombre(categoria.getNombre());
+                categoriaDTOs.add(categoriaDTO);
+            }
 
             dto.setIdPelicula(filmId);
+            dto.setCategoria(categoriaDTOs);
             dto.setTitulo(titulo);
-            dto.setIdCategoria(idCategoria);
             dto.setAudiencia(clasificacion);
 
             peliculasDTO.add(dto);
@@ -70,17 +77,18 @@ public class PeliculaETLService {
 
     private List<PeliculaDTO> transformarPeliculasConsulta(List<Map<String, Object>> datos) {
         List<PeliculaDTO> peliculasDTO = new ArrayList<>();
-
-        for (Map<String, Object> fila : datos) {
-            PeliculaDTO dto = new PeliculaDTO();
-
-            dto.setIdPelicula(((Number) fila.get("ID_PELICULA")).intValue());
-            dto.setTitulo((String) fila.get("TITULO"));
-            dto.setIdCategoria(((Integer) fila.get("ID_CATEGORIA")).intValue());
-            dto.setAudiencia((String) fila.get("AUDIENCIA"));
-
-            peliculasDTO.add(dto);
-        }
+        /*
+         * for (Map<String, Object> fila : datos) {
+         * PeliculaDTO dto = new PeliculaDTO();
+         * 
+         * dto.setIdPelicula(((Number) fila.get("ID_PELICULA")).intValue());
+         * dto.setTitulo((String) fila.get("TITULO"));
+         * dto.setIdCategoria(((Integer) fila.get("ID_CATEGORIA")).intValue());
+         * dto.setAudiencia((String) fila.get("AUDIENCIA"));
+         * 
+         * peliculasDTO.add(dto);
+         * }
+         */
 
         return peliculasDTO;
     }
@@ -89,7 +97,13 @@ public class PeliculaETLService {
         List<DimPelicula> peliculas = new ArrayList<>();
 
         for (PeliculaDTO dto : peliculasDTO) {
-            DimCategoria categoria = dimCategoriaRepository.findById(dto.getIdCategoria()).get();
+            if (dto.getCategoria().isEmpty())
+                continue;
+
+            CategoriaDTO catDTO = dto.getCategoria().get(0);
+            DimCategoria categoria = dimCategoriaRepository.findById(catDTO.getId()).orElse(null);
+            if (categoria == null)
+                continue;
 
             DimPelicula pelicula = new DimPelicula();
             pelicula.setIdPelicula(dto.getIdPelicula());
@@ -116,22 +130,26 @@ public class PeliculaETLService {
         cargarPeliculasOLAP(peliculasTransformadas);
     }
 
-    public void sincronizarETL(String sqlQuery) {
-        List<Map<String, Object>> origen = extraerPeliculas(sqlQuery);
-        List<PeliculaDTO> peliculasDTO = transformarPeliculasTabla(origen);
-        List<DimPelicula> existentes = dimPeliculaRepository.findAll();
-
-        IncrementalETLHelper.sincronizar(
-                peliculasDTO,
-                existentes,
-                dto -> {
-                    DimCategoria categoria = dimCategoriaRepository.findById(dto.getId()).orElse(null);
-                    return new DimPelicula(dto.getIdPelicula(), dto.getTitulo(), categoria, dto.getAudiencia());
-                },
-                DimPelicula::getIdPelicula,
-                entidad -> new PeliculaDTO(entidad.getIdPelicula(), entidad.getTitulo(),
-                        entidad.getCategoria().getIdCategoria(), entidad.getAudiencia()),
-                lista -> dimPeliculaRepository.saveAll(lista),
-                lista -> dimPeliculaRepository.deleteAll(lista));
-    }
+    /*
+     * public void sincronizarETL(String sqlQuery) {
+     * List<Map<String, Object>> origen = extraerPeliculas(sqlQuery);
+     * List<PeliculaDTO> peliculasDTO = transformarPeliculasTabla(origen);
+     * List<DimPelicula> existentes = dimPeliculaRepository.findAll();
+     * 
+     * IncrementalETLHelper.sincronizar(
+     * peliculasDTO,
+     * existentes,
+     * dto -> {
+     * DimCategoria categoria =
+     * dimCategoriaRepository.findById(dto.getId()).orElse(null);
+     * return new DimPelicula(dto.getIdPelicula(), dto.getTitulo(), categoria,
+     * dto.getAudiencia());
+     * },
+     * DimPelicula::getIdPelicula,
+     * entidad -> new PeliculaDTO(entidad.getIdPelicula(), entidad.getTitulo(),
+     * entidad.getCategoria().getIdCategoria(), entidad.getAudiencia()),
+     * lista -> dimPeliculaRepository.saveAll(lista),
+     * lista -> dimPeliculaRepository.deleteAll(lista));
+     * }
+     */
 }

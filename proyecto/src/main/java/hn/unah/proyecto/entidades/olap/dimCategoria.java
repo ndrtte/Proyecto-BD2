@@ -1,8 +1,12 @@
 package hn.unah.proyecto.entidades.olap;
 
+import java.util.List;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,4 +26,7 @@ public class DimCategoria {
 
     @Column(name = "nombre_categoria")
     private String nombreCategoria;
+
+    @ManyToMany(mappedBy = "dimCategorias")
+    private List<DimPelicula> dimPeliculas;
 }

@@ -48,13 +48,12 @@ public class CategoriaETLService {
         List<DimCategoria> categorias = new ArrayList<>();
 
         for (CategoriaDTO dto : categoriasDTO) {
-            DimCategoria entidad = new DimCategoria(
-                    dto.getId(),
-                    dto.getNombre());
-            categorias.add(entidad);
-        }
+            DimCategoria entidad = new DimCategoria();
+            entidad.setIdCategoria(dto.getId());
+            entidad.setNombreCategoria(dto.getNombre());
 
-        dimCategoriaRepository.saveAll(categorias);
+            dimCategoriaRepository.saveAll(categorias);
+        }
     }
 
     public void ejecutarETL(String sqlQuery) {
@@ -66,22 +65,24 @@ public class CategoriaETLService {
     public List<DimCategoria> getAllDimCategorias() {
         return dimCategoriaRepository.findAll();
     }
-    
-/*
-    public void sincronizarETL(String sqlQuery) {
-        List<Map<String, Object>> origen = extraerCategoriasOLTP(sqlQuery);
-        List<CategoriaDTO> categoriasDTO = transformarCategorias(origen);
-        List<DimCategoria> existentes = dimCategoriaRepository.findAll();
 
-        IncrementalETLHelper.sincronizar(
-            categoriasDTO,
-            existentes,
-            dto -> new DimCategoria(dto.getId(), dto.getNombre()),
-            DimCategoria::getIdCategoria,
-            entidad -> new CategoriaDTO(entidad.getIdCategoria(), entidad.getNombreCategoria()),
-            lista -> dimCategoriaRepository.saveAll(lista),
-            lista -> dimCategoriaRepository.deleteAll(lista)
-        );
-    }*/
+    /*
+     * public void sincronizarETL(String sqlQuery) {
+     * List<Map<String, Object>> origen = extraerCategoriasOLTP(sqlQuery);
+     * List<CategoriaDTO> categoriasDTO = transformarCategorias(origen);
+     * List<DimCategoria> existentes = dimCategoriaRepository.findAll();
+     * 
+     * IncrementalETLHelper.sincronizar(
+     * categoriasDTO,
+     * existentes,
+     * dto -> new DimCategoria(dto.getId(), dto.getNombre()),
+     * DimCategoria::getIdCategoria,
+     * entidad -> new CategoriaDTO(entidad.getIdCategoria(),
+     * entidad.getNombreCategoria()),
+     * lista -> dimCategoriaRepository.saveAll(lista),
+     * lista -> dimCategoriaRepository.deleteAll(lista)
+     * );
+     * }
+     */
 
 }

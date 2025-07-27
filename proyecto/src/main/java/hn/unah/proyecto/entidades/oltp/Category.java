@@ -1,10 +1,12 @@
 package hn.unah.proyecto.entidades.oltp;
 
 import java.util.Date;
+import java.util.List;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -27,4 +29,7 @@ public class Category {
 
     @Column(name = "last_update")
     private Date ultimaActualizacion;
+
+    @ManyToMany(mappedBy = "categorias")
+    private List <Film> peliculas;
 }

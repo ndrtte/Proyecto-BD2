@@ -4,6 +4,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -11,6 +13,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -36,7 +39,7 @@ public class Film {
     private Language idioma;
 
     @ManyToOne
-    @JoinColumn(name = "original_language_id", referencedColumnName = "language_id") //Opcional
+    @JoinColumn(name = "original_language_id", referencedColumnName = "language_id") 
     private Language idiomaOriginal;
     
     @Column(name = "rental_duration")
@@ -47,9 +50,6 @@ public class Film {
     
     @Column(name = "length")
     private Integer duracion;
-
-    // @Column(name = "replacement_cost")
-    // private Integer costoRemplazo;
     
     @Column(name = "rating")
     private String clasificacion;
@@ -59,6 +59,17 @@ public class Film {
     
     @Column(name = "last_update")
     private Date ultimaActualizacion;
+
+    @ManyToMany()
+    @JoinTable(
+        name = "film_category",
+        joinColumns = @JoinColumn(name = "film_id"),
+        inverseJoinColumns = @JoinColumn(name = "category_id")
+    )
+    private List<Category> categorias;
 }
+
+
+
 
 
