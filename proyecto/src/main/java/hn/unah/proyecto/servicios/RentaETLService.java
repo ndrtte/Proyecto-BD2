@@ -99,11 +99,11 @@ public class RentaETLService {
         IncrementalETLHelper.sincronizar(
             rentasDTO,
             existentes,
-            dto -> new DimRenta(dto.getIdRenta(), dto.getFechaRenta(), dto.getFechaDevolucion()),          
+            dto -> new DimRenta(dto.getIdRenta(), dto.getFechaRenta(), dto.getFechaDevolucion()),
             DimRenta::getIdRenta,
             entidad -> new RentaDTO(entidad.getIdRenta(), entidad.getFechaRenta(), entidad.getFechaDevolucion()),
             lista -> dimRentaRepository.saveAll(lista),
             lista -> dimRentaRepository.deleteAll(lista)
         );
-    }    
+    }
 }
