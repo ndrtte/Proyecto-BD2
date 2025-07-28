@@ -20,9 +20,6 @@ public class EmpleadoETLService {
     @Autowired
     private DimTiendaRepository tiendaRepository;
 
-    // @Autowired
-    // private StaffRepository staffRepository;
-
     @Autowired
     private DimEmpleadoRepository dimEmpleadoRepository;
 
@@ -112,24 +109,4 @@ public class EmpleadoETLService {
     public List<DimEmpleado> getAllEmpleados() {
         return dimEmpleadoRepository.findAll();
     }
-
-    /* 
-    public void sincronizarETL(String sqlQuery) {
-        List<Map<String, Object>> origen = extraerEmpleadosOLTP(sqlQuery);
-        List<EmpleadoDTO> empleadosDTO = transformarEmpleadoTabla(origen);
-        List<DimEmpleado> existentes = dimEmpleadoRepository.findAll();
-
-        IncrementalETLHelper.sincronizar(
-            empleadosDTO,
-            existentes,
-            dto -> {
-                DimTienda tienda = tiendaRepository.findById(dto.getIdTienda()).orElse(null);
-                return new DimEmpleado(dto.getIdEmpleado(), dto.getNombre(), tienda);
-            },       
-            DimEmpleado::getIdEmpleado,
-            entidad -> new EmpleadoDTO(entidad.getIdEmpleado(), entidad.getNombre(), entidad.getTienda().getIdTienda()),
-            lista -> dimEmpleadoRepository.saveAll(lista),
-            lista -> dimEmpleadoRepository.deleteAll(lista)
-        );
-    }    */
 }
