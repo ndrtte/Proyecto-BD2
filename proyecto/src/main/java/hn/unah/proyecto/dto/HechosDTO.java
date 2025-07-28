@@ -24,7 +24,6 @@ public class HechosDTO implements IdentificableDTO {
     private String audiencia; //clasificacion
     private Integer cantidad;
     private Double tiempoRenta;
-    private String unidadTiempo;
 
     @Override
     public Integer getId() {
@@ -45,13 +44,12 @@ public class HechosDTO implements IdentificableDTO {
                 montoPago.equals(other.montoPago) &&
                 audiencia.equals(other.audiencia) &&
                 cantidad.equals(other.cantidad) &&
-                tiempoRenta.equals(other.tiempoRenta) &&
-                unidadTiempo.equals(other.unidadTiempo)                                                                                                
+                tiempoRenta.equals(other.tiempoRenta)                                                                                               
         ;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(idHechos, idRenta, idEmpleado, idPelicula, idTienda, idTiempo, montoPago, audiencia, cantidad, tiempoRenta, unidadTiempo);
+        return Objects.hash(idHechos, idRenta, idEmpleado, idPelicula, idTienda, idTiempo, montoPago, audiencia, cantidad, tiempoRenta);
     }       
 }

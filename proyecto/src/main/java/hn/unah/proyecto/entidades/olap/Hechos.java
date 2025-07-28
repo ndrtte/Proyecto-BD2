@@ -53,7 +53,4 @@ public class Hechos {
 
     @Column(name = "tiempo_renta")
     private Double tiempoRenta;
-
-    @Column(name = "unidad_tiempo")
-    private String unidadTiempo;
 }

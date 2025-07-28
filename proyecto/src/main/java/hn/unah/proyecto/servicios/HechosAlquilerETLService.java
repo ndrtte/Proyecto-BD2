@@ -73,20 +73,6 @@ public class HechosAlquilerETLService {
             //cantidad:
             Integer cantidad = 1;
 
-            Rental renta = rentalRepository.findById(rentaId).get();
-
-            //tiempo renta
-            Date fechaRenta = renta.getFechaRenta();
-            Date fechaDevolucion = renta.getFechaDevolucion();
-
-            double horas;
-
-            if (fechaDevolucion != null) {
-                Duration duracion = Duration.between(fechaRenta.toInstant(), fechaDevolucion.toInstant());
-                horas = duracion.toHours();
-            } else {
-                horas = 0;
-            }
 
             HechosDTO dto = new HechosDTO();
 
@@ -97,18 +83,6 @@ public class HechosAlquilerETLService {
             dto.setIdTiempo(tiempoId);
             dto.setMontoPago(monto);
             dto.setCantidad(cantidad);
-
-            String unidadTiempo;
-
-            if (horas < 24) {
-                dto.setTiempoRenta(horas);
-                unidadTiempo = "Horas";
-            } else {
-                double dias = horas / 24.0;
-                dto.setTiempoRenta(dias);
-                unidadTiempo = "Días";
-            }
-            dto.setUnidadTiempo(unidadTiempo);
 
             hechosDTO.add(dto);
         }
@@ -131,7 +105,6 @@ public class HechosAlquilerETLService {
             hecho.setMontoPago(dto.getMontoPago());
             hecho.setCantidad(dto.getCantidad());
             hecho.setTiempoRenta(dto.getTiempoRenta());
-            hecho.setUnidadTiempo(dto.getUnidadTiempo());
 
             hechos.add(hecho);
         }
