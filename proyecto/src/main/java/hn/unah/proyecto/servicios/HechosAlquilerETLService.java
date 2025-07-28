@@ -2,6 +2,7 @@ package hn.unah.proyecto.servicios;
 
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -17,6 +18,7 @@ import hn.unah.proyecto.repositorios.olap.DimPeliculaRepository;
 import hn.unah.proyecto.repositorios.olap.DimRentaRepository;
 import hn.unah.proyecto.repositorios.olap.DimTiempoRepository;
 import hn.unah.proyecto.repositorios.olap.DimTiendaRepository;
+import hn.unah.proyecto.repositorios.olap.HechosAlquilerRepository;
 import hn.unah.proyecto.repositorios.oltp.RentalRepository;
 
 @Service
@@ -42,14 +44,17 @@ public class HechosAlquilerETLService {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private HechosAlquilerRepository hechosRepository;
     
 
-    private List<Map<String, Object>> extraerRentasOLTP(String sqlQuery) {
+    private List<Map<String, Object>> extraerHechosOLTP(String sqlQuery) {
         List<Map<String, Object>> registros = jdbcTemplate.queryForList(sqlQuery);
         return registros;
     }
 
-    private List<HechosDTO> transformarRentas(List<Map<String, Object>> hechos) {
+    private List<HechosDTO> transformarHechos(List<Map<String, Object>> hechos) {
 
         List<HechosDTO> hechosDTO = new ArrayList<>();
 
@@ -71,9 +76,17 @@ public class HechosAlquilerETLService {
             Rental renta = rentalRepository.findById(rentaId).get();
 
             //tiempo renta
-            Duration duracion = Duration.between(renta.getFechaRenta().toInstant(), renta.getFechaDevolucion().toInstant());
+            Date fechaRenta = renta.getFechaRenta();
+            Date fechaDevolucion = renta.getFechaDevolucion();
 
-            double horas = duracion.toHours();
+            double horas;
+
+            if (fechaDevolucion != null) {
+                Duration duracion = Duration.between(fechaRenta.toInstant(), fechaDevolucion.toInstant());
+                horas = duracion.toHours();
+            } else {
+                horas = 0;
+            }
 
             HechosDTO dto = new HechosDTO();
 
@@ -116,7 +129,6 @@ public class HechosAlquilerETLService {
             hecho.setTiempo(dimTiempoRepository.findById(dto.getIdTiempo()).orElse(null));
 
             hecho.setMontoPago(dto.getMontoPago());
-            hecho.setAudiencia(dto.getAudiencia());
             hecho.setCantidad(dto.getCantidad());
             hecho.setTiempoRenta(dto.getTiempoRenta());
             hecho.setUnidadTiempo(dto.getUnidadTiempo());
@@ -124,12 +136,12 @@ public class HechosAlquilerETLService {
             hechos.add(hecho);
         }
 
-       // hechosRepository.saveAll(hechos);
+        hechosRepository.saveAll(hechos);
     }
 
     public void ejecutarETL(String sqlQuery) {
-        List<Map<String, Object>> origen = extraerRentasOLTP(sqlQuery);
-        List<HechosDTO> transformadas = transformarRentas(origen);
+        List<Map<String, Object>> origen = extraerHechosOLTP(sqlQuery);
+        List<HechosDTO> transformadas = transformarHechos(origen);
         cargarHechosOLAP(transformadas);
     }
 }

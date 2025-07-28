@@ -38,6 +38,9 @@ public class ETLService {
     @Autowired
     private TiendaETLService tiendaETLService;
 
+    @Autowired
+    private HechosAlquilerETLService hechosETLService;
+
     public List<String> obtenerColumnas(String sourceTable) {
         String tablaOrigen = sourceTable.toUpperCase();
 
@@ -74,8 +77,10 @@ public class ETLService {
             tiempoETLService.ejecutarETL(sqlQuery, metodo);
         } else if (tablaDestino.equalsIgnoreCase("tbl_tienda")) {
             tiendaETLService.ejecutarETL(sqlQuery);
-        } else {
-            // Si la tabla destino no es ninguna de las anteriores, mando mensaje al front
+        } else if(tablaDestino.equalsIgnoreCase("tbl_hechos_renta")){
+            hechosETLService.ejecutarETL(sqlQuery);
+        }else{
+            //Que rayos pongo aca ayuda
         }
 
         return "";

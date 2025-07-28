@@ -99,7 +99,7 @@ public class TiempoETLService {
     }
 
 
-    private void cargarFechasOLAP(List<TiempoDTO> fechasDTO) {
+    private void cargarFechasOLAPTabla(List<TiempoDTO> fechasDTO) {
         
         List<DimTiempo> tiempoTransformado = new ArrayList<>();
 
@@ -117,15 +117,34 @@ public class TiempoETLService {
         dimTiempoRepository.saveAll(tiempoTransformado);
     }
 
+    private void cargarFechasOLAPConsulta(List<TiempoDTO> fechasDTO) {
+        
+        List<DimTiempo> tiempoTransformado = new ArrayList<>();
+
+        for (TiempoDTO dto : fechasDTO) {
+            DimTiempo tiempo = new DimTiempo();
+
+            tiempo.setFecha(dto.getFecha());
+            tiempo.setDiaSemana(dto.getDiaSemana());
+            tiempo.setMes(dto.getMes());
+            tiempo.setAnio(dto.getAnio());
+            tiempo.setTrimestre(dto.getTrimestre());
+
+            tiempoTransformado.add(tiempo);
+        }
+        dimTiempoRepository.saveAll(tiempoTransformado);
+    }
+
     public void ejecutarETL(String sqlQuery, String metodo) {
         List<Map<String, Object>> origen = extraerFechasPagosOLTP(sqlQuery);
         List<TiempoDTO> transformadas;
         if(metodo.equalsIgnoreCase("Table")){
             transformadas = transformarFechasTabla(origen);
+            cargarFechasOLAPTabla(transformadas);
         }else{
             transformadas = transformarFechasConsulta(origen);
+            cargarFechasOLAPConsulta(transformadas);
         }
-        cargarFechasOLAP(transformadas);
     }
 
     public List<DimTiempo> getAllDimTiempo() {

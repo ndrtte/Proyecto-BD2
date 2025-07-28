@@ -31,7 +31,7 @@ public class Address {
     // @Column(name = "address2")
     // private String direccion2;
 
-    @Column(name = "distrinct")
+    @Column(name = "district")
     private String distrito;
 
     @JoinColumn(name = "city_id", referencedColumnName = "city_id")

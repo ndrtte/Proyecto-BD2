@@ -1,7 +1,10 @@
 package hn.unah.proyecto.entidades.olap;
 
+import jakarta.annotation.Generated;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -15,10 +18,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "tbl_hechos")
+@Table(name = "tbl_hechos_renta")
 public class Hechos {
     
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_hechos")
     private Integer id_hechos;
 
@@ -52,9 +56,6 @@ public class Hechos {
 
     @Column(name = "ingresos")
     private Double montoPago;
-
-    @Column(name = "audiencia")
-    private String audiencia; //clasificacion
 
     @Column(name = "cantidad")
     private Integer cantidad;
