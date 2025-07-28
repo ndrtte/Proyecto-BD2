@@ -1,8 +1,6 @@
 package hn.unah.proyecto.servicios;
 
-import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -12,21 +10,16 @@ import org.springframework.stereotype.Service;
 
 import hn.unah.proyecto.dto.HechosDTO;
 import hn.unah.proyecto.entidades.olap.Hechos;
-import hn.unah.proyecto.entidades.oltp.Rental;
 import hn.unah.proyecto.repositorios.olap.DimEmpleadoRepository;
 import hn.unah.proyecto.repositorios.olap.DimPeliculaRepository;
 import hn.unah.proyecto.repositorios.olap.DimRentaRepository;
 import hn.unah.proyecto.repositorios.olap.DimTiempoRepository;
 import hn.unah.proyecto.repositorios.olap.DimTiendaRepository;
 import hn.unah.proyecto.repositorios.olap.HechosAlquilerRepository;
-import hn.unah.proyecto.repositorios.oltp.RentalRepository;
 
 @Service
 public class HechosAlquilerETLService {
     
-    @Autowired
-    private RentalRepository rentalRepository;
-
     @Autowired
     private DimRentaRepository dimRentaRepository;
 
