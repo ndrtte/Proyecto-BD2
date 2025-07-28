@@ -17,8 +17,6 @@ public class ETLService {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    private String consulta;
-
     @Autowired
     private CategoriaETLService categoriaETLService;
 

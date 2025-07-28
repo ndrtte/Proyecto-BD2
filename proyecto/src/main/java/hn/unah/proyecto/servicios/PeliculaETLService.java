@@ -10,28 +10,20 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import hn.unah.proyecto.dto.CategoriaDTO;
-// import hn.unah.proyecto.dto.EmpleadoDTO;
 import hn.unah.proyecto.dto.PeliculaDTO;
 import hn.unah.proyecto.entidades.olap.DimCategoria;
-// import hn.unah.proyecto.entidades.olap.DimEmpleado;
 import hn.unah.proyecto.entidades.olap.DimPelicula;
 import hn.unah.proyecto.entidades.oltp.Category;
 import hn.unah.proyecto.entidades.oltp.Film;
-// import hn.unah.proyecto.entidades.olap.DimTienda;
-import hn.unah.proyecto.repositorios.olap.DimCategoriaRepository;
 import hn.unah.proyecto.repositorios.olap.DimPeliculaRepository;
 import hn.unah.proyecto.repositorios.oltp.FilmRepository;
-// import hn.unah.proyecto.repositorios.oltp.FilmRepository;
-import hn.unah.proyecto.util.IncrementalETLHelper;
+
 
 @Service
 public class PeliculaETLService {
 
     @Autowired
     private DimPeliculaRepository dimPeliculaRepository;
-
-    @Autowired
-    private DimCategoriaRepository dimCategoriaRepository;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;

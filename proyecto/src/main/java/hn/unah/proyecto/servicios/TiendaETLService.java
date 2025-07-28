@@ -11,27 +11,17 @@ import org.springframework.stereotype.Service;
 import hn.unah.proyecto.dto.TiendaDTO;
 import hn.unah.proyecto.entidades.olap.DimCiudad;
 import hn.unah.proyecto.entidades.olap.DimTienda;
-import hn.unah.proyecto.entidades.oltp.City;
-import hn.unah.proyecto.entidades.oltp.Store;
 import hn.unah.proyecto.repositorios.olap.DimCiudadRepository;
 import hn.unah.proyecto.repositorios.olap.DimTiendaRepository;
-import hn.unah.proyecto.repositorios.oltp.CityRepository;
-import hn.unah.proyecto.repositorios.oltp.StoreRepository;
 
 @Service
 public class TiendaETLService {
-
-    @Autowired
-    private StoreRepository storeRepository;
 
     @Autowired
     private DimTiendaRepository dimTiendaRepository;
 
     @Autowired
     private DimCiudadRepository dimCiudadRepository;
-
-    @Autowired
-    private CityRepository cityRepository;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;

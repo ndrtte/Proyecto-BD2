@@ -5,7 +5,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import hn.unah.proyecto.dto.MigrationDataDTO;
-import hn.unah.proyecto.servicios.CategoriaETLService;
 import hn.unah.proyecto.servicios.ETLService;
 
 import java.util.List;

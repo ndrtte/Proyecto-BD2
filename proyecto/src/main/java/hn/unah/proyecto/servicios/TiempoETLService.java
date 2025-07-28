@@ -4,31 +4,20 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.time.format.TextStyle;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
-import hn.unah.proyecto.dto.CiudadDTO;
-import hn.unah.proyecto.dto.RentaDTO;
 import hn.unah.proyecto.dto.TiempoDTO;
-import hn.unah.proyecto.entidades.olap.DimCiudad;
-import hn.unah.proyecto.entidades.olap.DimRenta;
 import hn.unah.proyecto.entidades.olap.DimTiempo;
-import hn.unah.proyecto.entidades.oltp.Payment;
-import hn.unah.proyecto.entidades.oltp.Rental;
 import hn.unah.proyecto.repositorios.olap.DimTiempoRepository;
-import hn.unah.proyecto.repositorios.oltp.PaymentRepository;
-import hn.unah.proyecto.repositorios.oltp.RentalRepository;
-import hn.unah.proyecto.util.IncrementalETLHelper;
-import jakarta.transaction.Transactional;
+
 
 @Service
 public class TiempoETLService {
@@ -37,27 +26,10 @@ public class TiempoETLService {
     // private RentalRepository rentalRepository;
 
     @Autowired
-    private PaymentRepository paymentRepository;
-
-    @Autowired
     private DimTiempoRepository dimTiempoRepository;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
-
-    private List<Date> extraerFechasRenta() {
-        List<Payment> pagos = paymentRepository.findAll();
-        
-        List<Date> fechas = new ArrayList<>();
-
-        for (Payment pago : pagos) {
-            Date fecha = pago.getFechaPago();
-            if (fecha != null) {
-                fechas.add(fecha);
-            }
-        }
-        return fechas;
-    }
 
     private List<Map<String, Object>> extraerFechasPagosOLTP(String sqlQuery) {
         List<Map<String, Object>> registros = jdbcTemplate.queryForList(sqlQuery);
