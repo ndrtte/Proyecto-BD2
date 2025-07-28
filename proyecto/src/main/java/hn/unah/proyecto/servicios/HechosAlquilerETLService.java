@@ -3,24 +3,20 @@ package hn.unah.proyecto.servicios;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import hn.unah.proyecto.dto.HechosDTO;
 import hn.unah.proyecto.entidades.olap.Hechos;
-import hn.unah.proyecto.entidades.olap.DimEmpleado;
-import hn.unah.proyecto.entidades.olap.DimPelicula;
-import hn.unah.proyecto.entidades.olap.DimRenta;
-import hn.unah.proyecto.entidades.olap.DimTiempo;
-import hn.unah.proyecto.entidades.olap.DimTienda;
 import hn.unah.proyecto.entidades.oltp.Rental;
 import hn.unah.proyecto.repositorios.olap.DimEmpleadoRepository;
 import hn.unah.proyecto.repositorios.olap.DimPeliculaRepository;
 import hn.unah.proyecto.repositorios.olap.DimRentaRepository;
 import hn.unah.proyecto.repositorios.olap.DimTiempoRepository;
 import hn.unah.proyecto.repositorios.olap.DimTiendaRepository;
-import hn.unah.proyecto.repositorios.oltp.PaymentRepository;
 import hn.unah.proyecto.repositorios.oltp.RentalRepository;
 
 @Service
@@ -28,9 +24,6 @@ public class HechosAlquilerETLService {
     
     @Autowired
     private RentalRepository rentalRepository;
-
-    @Autowired
-    private PaymentRepository paymentRepository;
 
     @Autowired
     private DimRentaRepository dimRentaRepository;
@@ -46,75 +39,61 @@ public class HechosAlquilerETLService {
 
     @Autowired
     private DimTiendaRepository dimTiendaRepository;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
     
 
-    private List<Rental> extraerRentasOLTP() {
-        return rentalRepository.findAll();
+    private List<Map<String, Object>> extraerRentasOLTP(String sqlQuery) {
+        List<Map<String, Object>> registros = jdbcTemplate.queryForList(sqlQuery);
+        return registros;
     }
 
-    private List<HechosDTO> transformarRentas(List<Rental> rentas) {
+    private List<HechosDTO> transformarRentas(List<Map<String, Object>> hechos) {
 
         List<HechosDTO> hechosDTO = new ArrayList<>();
 
-        for (Rental renta : rentas) {
+        for (Map<String, Object> hecho : hechos) {
 
-            if (renta.getFechaDevolucion() == null || renta.getFechaRenta() == null) continue;
-
-            DimRenta dimRenta = dimRentaRepository.findById(renta.getId()).orElse(null);
-            if (dimRenta == null) {
-                dimRenta = new DimRenta();
-                dimRenta.setIdRenta(renta.getId());
-                dimRenta.setFechaRenta(renta.getFechaRenta());
-                dimRenta.setFechaDevolucion(renta.getFechaDevolucion());
-
-                dimRentaRepository.save(dimRenta);
-            } 
-            
-            DimEmpleado empleado = dimEmpleadoRepository.findById(renta.getEmpleado().getId()).orElse(null);
-
-            DimPelicula pelicula = dimPeliculaRepository.findById(renta.getInventario().getPelicula().getId()).orElse(null);
-
-            DimTienda tienda = dimTiendaRepository.findById(renta.getInventario().getTienda().getId()).orElse(null);
-
-            DimTiempo tiempo = dimTiempoRepository.findByFecha(renta.getFechaRenta());
-            if (tiempo == null) continue;
-
+            Integer rentaId = ((Number) hecho.get("ID_RENTA")).intValue();
+            Integer empleadoId = ((Number) hecho.get("ID_EMPLEADO")).intValue();
+            Integer peliculaId = ((Number) hecho.get("ID_PELICULA")).intValue();
+            Integer tiendaId = ((Number) hecho.get("ID_TIENDA")).intValue();
+            Integer tiempoId = ((Number) hecho.get("ID_FECHA")).intValue();
 
             //metricas
             //ingresos
-            Double monto = paymentRepository.findByRenta_Id(renta.getId()).getMonto();
-
-            //clasificacion: R, G, NC-17, PG-13, PG
-            String clasificacion = renta.getInventario().getPelicula().getClasificacion();
+            Double monto = ((Number) hecho.get("INGRESOS")).doubleValue();
 
             //cantidad:
             Integer cantidad = 1;
+
+            Rental renta = rentalRepository.findById(rentaId).get();
 
             //tiempo renta
             Duration duracion = Duration.between(renta.getFechaRenta().toInstant(), renta.getFechaDevolucion().toInstant());
 
             double horas = duracion.toHours();
-            //Unidad tiempo
-            String unidadTiempo;
 
             HechosDTO dto = new HechosDTO();
 
-            dto.setIdRenta(dimRenta.getIdRenta());
-            dto.setIdEmpleado(empleado.getIdEmpleado());
-            dto.setIdPelicula(pelicula.getIdPelicula());
-            dto.setIdTienda(tienda.getIdTienda());
-            dto.setIdTiempo(tiempo.getIdTiempo());
-            dto.setMontoPago(monto); 
-            dto.setAudiencia(clasificacion);  
+            dto.setIdRenta(rentaId);
+            dto.setIdEmpleado(empleadoId);
+            dto.setIdPelicula(peliculaId);
+            dto.setIdTienda(tiendaId);
+            dto.setIdTiempo(tiempoId);
+            dto.setMontoPago(monto);
             dto.setCantidad(cantidad);
+
+            String unidadTiempo;
 
             if (horas < 24) {
                 dto.setTiempoRenta(horas);
-                unidadTiempo = "horas";
+                unidadTiempo = "Horas";
             } else {
                 double dias = horas / 24.0;
                 dto.setTiempoRenta(dias);
-                unidadTiempo = "días";
+                unidadTiempo = "Días";
             }
             dto.setUnidadTiempo(unidadTiempo);
 
@@ -148,8 +127,8 @@ public class HechosAlquilerETLService {
        // hechosRepository.saveAll(hechos);
     }
 
-    public void ejecutarETL() {
-        List<Rental> origen = extraerRentasOLTP();
+    public void ejecutarETL(String sqlQuery) {
+        List<Map<String, Object>> origen = extraerRentasOLTP(sqlQuery);
         List<HechosDTO> transformadas = transformarRentas(origen);
         cargarHechosOLAP(transformadas);
     }
