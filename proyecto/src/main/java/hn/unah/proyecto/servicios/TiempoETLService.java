@@ -18,7 +18,6 @@ import hn.unah.proyecto.dto.TiempoDTO;
 import hn.unah.proyecto.entidades.olap.DimTiempo;
 import hn.unah.proyecto.repositorios.olap.DimTiempoRepository;
 
-
 @Service
 public class TiempoETLService {
 
@@ -28,8 +27,53 @@ public class TiempoETLService {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    private List<Map<String, Object>> extraerFechasPagosOLTP(String sqlQuery) {
-        List<Map<String, Object>> registros = jdbcTemplate.queryForList(sqlQuery);
+    private List<Map<String, Object>> extraerFechasPagosOLTP(String sqlQuery, String metodo) {
+        List<Map<String, Object>> registrosOLTP = jdbcTemplate.queryForList(sqlQuery);
+        List<Map<String, Object>> registrosOLAP = jdbcTemplate.queryForList("SELECT FECHA FROM TBL_TIEMPO");
+        List<Map<String, Object>> registros = new ArrayList<>();
+
+        if (metodo.equalsIgnoreCase("Table")) {
+            for (Map<String, Object> filaOLTP : registrosOLTP) {
+                Date idOLTP = ((Date) filaOLTP.get("PAYMENT_DATE"));
+                boolean existeEnOlap = false;
+
+                for (Map<String, Object> filaOLAP : registrosOLAP) {
+                    Date idOLAP = ((Date) filaOLAP.get("FECHA"));
+
+                    if (idOLTP.equals(idOLAP)) {
+                        existeEnOlap = true;
+                        break;
+                    }
+
+                    if (!existeEnOlap) {
+                        registros.add(filaOLTP);
+                    }
+
+                }
+
+            }
+        } else {
+            for (Map<String, Object> filaOLTP : registrosOLTP) {
+                Date idOLTP = ((Date) filaOLTP.get("FECHA"));
+                boolean existeEnOlap = false;
+
+                for (Map<String, Object> filaOLAP : registrosOLAP) {
+                    Date idOLAP = ((Date) filaOLAP.get("FECHA"));
+
+                    if (idOLTP.equals(idOLAP)) {
+                        existeEnOlap = true;
+                        break;
+                    }
+
+                    if (!existeEnOlap) {
+                        registros.add(filaOLTP);
+                    }
+
+                }
+
+            }
+        }
+
         return registros;
     }
 
@@ -51,8 +95,8 @@ public class TiempoETLService {
             Date fecha = convertirFecha(fila.get("PAYMENT_DATE"));
             if (fecha != null) {
                 LocalDate localDate = fecha.toInstant()
-                                        .atZone(ZoneId.systemDefault())
-                                        .toLocalDate();
+                        .atZone(ZoneId.systemDefault())
+                        .toLocalDate();
                 fechasUnicas.add(localDate);
             }
         }
@@ -76,7 +120,7 @@ public class TiempoETLService {
     public List<TiempoDTO> transformarFechasConsulta(List<Map<String, Object>> fechasOrigen) {
         List<TiempoDTO> tiemposDTO = new ArrayList<>();
 
-        for (Map<String,Object> fila : fechasOrigen) {
+        for (Map<String, Object> fila : fechasOrigen) {
             TiempoDTO tiempoDTO = new TiempoDTO();
 
             Date fecha = ((Date) fila.get("FECHA"));
@@ -94,20 +138,18 @@ public class TiempoETLService {
             tiemposDTO.add(tiempoDTO);
         }
 
-
         return tiemposDTO;
     }
 
-
     private void cargarFechasOLAPTabla(List<TiempoDTO> fechasDTO) {
-        
+
         List<DimTiempo> tiempoTransformado = new ArrayList<>();
 
         for (TiempoDTO dto : fechasDTO) {
             DimTiempo tiempo = new DimTiempo();
 
             tiempo.setFecha(dto.getFecha());
-            tiempo.setDiaSemana(dto.getDiaSemana()); 
+            tiempo.setDiaSemana(dto.getDiaSemana());
             tiempo.setMes(dto.getMes());
             tiempo.setAnio(dto.getAnio());
             tiempo.setTrimestre((dto.getMes() - 1) / 3 + 1);
@@ -118,7 +160,7 @@ public class TiempoETLService {
     }
 
     private void cargarFechasOLAPConsulta(List<TiempoDTO> fechasDTO) {
-        
+
         List<DimTiempo> tiempoTransformado = new ArrayList<>();
 
         for (TiempoDTO dto : fechasDTO) {
@@ -136,12 +178,12 @@ public class TiempoETLService {
     }
 
     public void ejecutarETL(String sqlQuery, String metodo) {
-        List<Map<String, Object>> origen = extraerFechasPagosOLTP(sqlQuery);
+        List<Map<String, Object>> origen = extraerFechasPagosOLTP(sqlQuery, metodo);
         List<TiempoDTO> transformadas;
-        if(metodo.equalsIgnoreCase("Table")){
+        if (metodo.equalsIgnoreCase("Table")) {
             transformadas = transformarFechasTabla(origen);
             cargarFechasOLAPTabla(transformadas);
-        }else{
+        } else {
             transformadas = transformarFechasConsulta(origen);
             cargarFechasOLAPConsulta(transformadas);
         }
@@ -151,5 +193,3 @@ public class TiempoETLService {
         return dimTiempoRepository.findAll();
     }
 }
-
-

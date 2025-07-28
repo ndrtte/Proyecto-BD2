@@ -79,11 +79,9 @@ public class ETLService {
             tiendaETLService.ejecutarETL(sqlQuery);
         } else if(tablaDestino.equalsIgnoreCase("tbl_hechos_renta")){
             hechosETLService.ejecutarETL(sqlQuery);
-        }else{
-            //Que rayos pongo aca ayuda
         }
 
-        return "";
+        return "Migracion exitosa";
     }
 
     private String consultaPorTabla(MigrationDataDTO data) {

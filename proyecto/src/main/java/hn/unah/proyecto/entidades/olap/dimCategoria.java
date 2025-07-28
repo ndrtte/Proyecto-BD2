@@ -2,6 +2,7 @@ package hn.unah.proyecto.entidades.olap;
 
 import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -26,6 +27,6 @@ public class DimCategoria {
     @Column(name = "nombre_categoria")
     private String nombreCategoria;
 
-    @ManyToMany(mappedBy = "dimCategorias")
+    @ManyToMany(mappedBy = "dimCategorias", cascade = CascadeType.ALL)
     private List<DimPelicula> dimPeliculas;
 }

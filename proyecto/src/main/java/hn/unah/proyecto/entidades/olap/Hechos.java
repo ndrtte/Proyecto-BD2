@@ -1,6 +1,5 @@
 package hn.unah.proyecto.entidades.olap;
 
-import jakarta.annotation.Generated;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -30,10 +29,6 @@ public class Hechos {
     @JoinColumn(name = "id_renta")
     private DimRenta renta;
 
-    // @ManyToOne 
-    // @JoinColumn(name = "id_cliente")
-    // private dimCliente cliente;
-
     @ManyToOne 
     @JoinColumn(name = "id_empleado")
     private DimEmpleado empleado;
@@ -49,10 +44,6 @@ public class Hechos {
     @ManyToOne 
     @JoinColumn(name = "id_fecha")
     private DimTiempo tiempo;
-
-    // @ManyToOne 
-    // @JoinColumn(name = "id_pago")
-    // private dimPago pago;
 
     @Column(name = "ingresos")
     private Double montoPago;

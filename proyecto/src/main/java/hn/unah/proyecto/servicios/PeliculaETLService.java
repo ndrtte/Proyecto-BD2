@@ -18,7 +18,6 @@ import hn.unah.proyecto.entidades.oltp.Film;
 import hn.unah.proyecto.repositorios.olap.DimPeliculaRepository;
 import hn.unah.proyecto.repositorios.oltp.FilmRepository;
 
-
 @Service
 public class PeliculaETLService {
 
@@ -32,8 +31,30 @@ public class PeliculaETLService {
     private FilmRepository filmRepository;
 
     private List<Map<String, Object>> extraerPeliculas(String sqlQuery) {
-        List<Map<String, Object>> registros = jdbcTemplate.queryForList(sqlQuery);
-        return registros;
+        List<Map<String, Object>> registrosOLTP = jdbcTemplate.queryForList(sqlQuery);
+        List<Map<String, Object>> registrosOLAP = jdbcTemplate.queryForList("SELECT ID_PELICULA FROM TBL_PELICULA");
+        List<Map<String, Object>> registros = new ArrayList<>();
+
+        for (Map<String, Object> filaOLTP : registrosOLTP) {
+            Integer idOLTP = ((Number) filaOLTP.get("FILM_ID")).intValue();
+            boolean existeEnOlap = false;
+
+            for (Map<String, Object> filaOLAP : registrosOLAP) {
+                Integer idOLAP = ((Number) filaOLAP.get("ID_PELICULA")).intValue();
+
+                if (idOLTP.equals(idOLAP)) {
+                    existeEnOlap = true;
+                    break;
+                }
+
+                if (!existeEnOlap) {
+                    registros.add(filaOLTP);
+                }
+
+            }
+        }
+
+        return registrosOLTP;
     }
 
     private List<PeliculaDTO> transformarPeliculasTabla(List<Map<String, Object>> peliculasOrigen) {

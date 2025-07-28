@@ -17,13 +17,9 @@ import hn.unah.proyecto.entidades.olap.DimRenta;
 // import hn.unah.proyecto.entidades.oltp.Rental;
 import hn.unah.proyecto.repositorios.olap.DimRentaRepository;
 // import hn.unah.proyecto.repositorios.oltp.RentalRepository;
-import hn.unah.proyecto.util.IncrementalETLHelper;
 
 @Service
 public class RentaETLService {
-    
-    // @Autowired
-    // private RentalRepository rentalRepository;
 
     @Autowired
     private DimRentaRepository dimRentaRepository;
@@ -31,12 +27,11 @@ public class RentaETLService {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    private List<Map<String, Object>>  extraerRentasOLTP(String sqlQuery){
-        List<Map<String, Object>> registros = jdbcTemplate.queryForList(sqlQuery);
+    private List<Map<String, Object>> extraerRentasOLTP(String sqlQuery) {
+        List<Map<String, Object>> registros = jdbcTemplate.queryForList(sqlQuery + " WHERE NOT EXISTS ( SELECT 1 FROM TBL_RENTA r WHERE r.ID_RENTA = RENTAL.RENTAL_ID ) ORDER BY RENTAL_ID");
         return registros;
     }
 
-    /* Luego lo podemos agregar en utils */
     private Date convertirFecha(Object valor) {
         if (valor instanceof Timestamp) {
             return new Date(((Timestamp) valor).getTime());
@@ -56,7 +51,7 @@ public class RentaETLService {
             Integer id = ((Number) renta.get("RENTAL_ID")).intValue();
             Date fechaRenta = convertirFecha(renta.get("RENTAL_DATE"));
             Date fechaDev = convertirFecha(renta.get("RETURN_DATE"));
-            
+
             dtoRenta.setIdRenta(id);
             dtoRenta.setFechaRenta(fechaRenta);
             dtoRenta.setFechaDevolucion(fechaDev);
@@ -69,12 +64,12 @@ public class RentaETLService {
 
         List<DimRenta> rentasDestino = new ArrayList<>();
 
-        for (RentaDTO dto : rentasDTO){
+        for (RentaDTO dto : rentasDTO) {
             DimRenta entidad = new DimRenta();
             entidad.setIdRenta(dto.getIdRenta());
             entidad.setFechaRenta(dto.getFechaRenta());
             entidad.setFechaDevolucion(dto.getFechaDevolucion());
-            
+
             rentasDestino.add(entidad);
         }
 
@@ -89,21 +84,5 @@ public class RentaETLService {
 
     public List<DimRenta> getAllCiudades() {
         return dimRentaRepository.findAll();
-    }
-
-    public void sincronizarETL(String sqlQuery) {
-        List<Map<String, Object>> origen = extraerRentasOLTP(sqlQuery);
-        List<RentaDTO> rentasDTO = transformarRentas(origen);
-        List<DimRenta> existentes = dimRentaRepository.findAll();
-
-        IncrementalETLHelper.sincronizar(
-            rentasDTO,
-            existentes,
-            dto -> new DimRenta(dto.getIdRenta(), dto.getFechaRenta(), dto.getFechaDevolucion()),
-            DimRenta::getIdRenta,
-            entidad -> new RentaDTO(entidad.getIdRenta(), entidad.getFechaRenta(), entidad.getFechaDevolucion()),
-            lista -> dimRentaRepository.saveAll(lista),
-            lista -> dimRentaRepository.deleteAll(lista)
-        );
     }
 }

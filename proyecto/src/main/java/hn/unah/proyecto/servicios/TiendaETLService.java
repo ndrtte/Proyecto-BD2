@@ -26,8 +26,30 @@ public class TiendaETLService {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    private  List<Map<String, Object>> extraerTiendasOLTP(String sqlQuery) {
-        List<Map<String, Object>> registros = jdbcTemplate.queryForList(sqlQuery);
+    private List<Map<String, Object>> extraerTiendasOLTP(String sqlQuery) {
+        List<Map<String, Object>> registrosOLTP = jdbcTemplate.queryForList(sqlQuery);
+        List<Map<String, Object>> registrosOLAP = jdbcTemplate.queryForList("SELECT ID_TIENDA FROM TBL_TIENDA");
+        List<Map<String, Object>> registros = new ArrayList<>();
+
+        for (Map<String, Object> filaOLTP : registrosOLTP) {
+            Integer idOLTP = ((Number) filaOLTP.get("STORE_ID")).intValue();
+            boolean existeEnOlap = false;
+
+            for (Map<String, Object> filaOLAP : registrosOLAP) {
+                Integer idOLAP = ((Number) filaOLAP.get("ID_TIENDA")).intValue();
+
+                if (idOLTP.equals(idOLAP)) {
+                    existeEnOlap = true;
+                    break;
+                }
+
+                if (!existeEnOlap) {
+                    registros.add(filaOLTP);
+                }
+
+            }
+        }
+
         return registros;
     }
 
