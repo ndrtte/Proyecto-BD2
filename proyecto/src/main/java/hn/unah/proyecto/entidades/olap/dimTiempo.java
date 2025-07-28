@@ -4,6 +4,8 @@ import java.util.Date;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -18,6 +20,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "tbl_tiempo")
 public class DimTiempo {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_fecha")
     private Integer idTiempo;
 
@@ -25,7 +28,7 @@ public class DimTiempo {
     private Date fecha;
     
     @Column(name = "dia_semana")
-    private String diaSemana;
+    private Integer diaSemana;
 
     @Column(name = "mes")
     private Integer mes;

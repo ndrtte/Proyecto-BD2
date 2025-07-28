@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.TextStyle;
@@ -21,16 +22,22 @@ import hn.unah.proyecto.dto.TiempoDTO;
 import hn.unah.proyecto.entidades.olap.DimCiudad;
 import hn.unah.proyecto.entidades.olap.DimRenta;
 import hn.unah.proyecto.entidades.olap.DimTiempo;
+import hn.unah.proyecto.entidades.oltp.Payment;
 import hn.unah.proyecto.entidades.oltp.Rental;
 import hn.unah.proyecto.repositorios.olap.DimTiempoRepository;
+import hn.unah.proyecto.repositorios.oltp.PaymentRepository;
 import hn.unah.proyecto.repositorios.oltp.RentalRepository;
 import hn.unah.proyecto.util.IncrementalETLHelper;
+import jakarta.transaction.Transactional;
 
 @Service
 public class TiempoETLService {
     
+    // @Autowired
+    // private RentalRepository rentalRepository;
+
     @Autowired
-    private RentalRepository rentalRepository;
+    private PaymentRepository paymentRepository;
 
     @Autowired
     private DimTiempoRepository dimTiempoRepository;
@@ -39,12 +46,12 @@ public class TiempoETLService {
     private JdbcTemplate jdbcTemplate;
 
     private List<Date> extraerFechasRenta() {
-        List<Rental> rentas = rentalRepository.findAll();
+        List<Payment> pagos = paymentRepository.findAll();
         
         List<Date> fechas = new ArrayList<>();
 
-        for (Rental renta : rentas) {
-            Date fecha = renta.getFechaRenta();
+        for (Payment pago : pagos) {
+            Date fecha = pago.getFechaPago();
             if (fecha != null) {
                 fechas.add(fecha);
             }
@@ -52,7 +59,7 @@ public class TiempoETLService {
         return fechas;
     }
 
-    private List<Map<String, Object>> extraerFechasRentasOLTP(String sqlQuery) {
+    private List<Map<String, Object>> extraerFechasPagosOLTP(String sqlQuery) {
         List<Map<String, Object>> registros = jdbcTemplate.queryForList(sqlQuery);
         return registros;
     }
@@ -81,13 +88,25 @@ public class TiempoETLService {
     //     return tiempoTransformado;    
     // }
 
-    public List<TiempoDTO> transformarFechas(List<Map<String, Object>> fechasOrigen) {
+    /* Luego lo podemos agregar en utils */
+    private Date convertirFecha(Object valor) {
+        if (valor instanceof Timestamp) {
+            return new Date(((Timestamp) valor).getTime());
+        } else if (valor instanceof Date) {
+            return (Date) valor;
+        } else {
+            return null;
+        }
+    }
+
+    public List<TiempoDTO> transformarFechasTabla(List<Map<String, Object>> fechasOrigen) {
+       
         Set<LocalDate> fechasUnicas = new HashSet<>();
 
         for (Map<String, Object> fila : fechasOrigen) {
-            Date date = (Date) fila.get("FECHA");
-            if (date != null) {
-                LocalDate localDate = date.toInstant()
+            Date fecha = convertirFecha(fila.get("PAYMENT_DATE"));
+            if (fecha != null) {
+                LocalDate localDate = fecha.toInstant()
                                         .atZone(ZoneId.systemDefault())
                                         .toLocalDate();
                 fechasUnicas.add(localDate);
@@ -99,7 +118,7 @@ public class TiempoETLService {
         for (LocalDate fecha : fechasUnicas) {
             TiempoDTO dto = new TiempoDTO();
             dto.setFecha(java.sql.Date.valueOf(fecha));
-            dto.setDiaSemana(fecha.getDayOfWeek().getDisplayName(TextStyle.FULL, new Locale("es")));
+            dto.setDiaSemana(fecha.getDayOfWeek().getValue());
             dto.setMes(fecha.getMonthValue());
             dto.setAnio(fecha.getYear());
             dto.setTrimestre((fecha.getMonthValue() - 1) / 3 + 1);
@@ -120,7 +139,6 @@ public class TiempoETLService {
         for (TiempoDTO dto : fechasDTO) {
             DimTiempo tiempo = new DimTiempo();
 
-            tiempo.setIdTiempo(Integer.parseInt(dto.toString().replace("-", ""))); 
             tiempo.setFecha(dto.getFecha());
             tiempo.setDiaSemana(dto.getDiaSemana()); 
             tiempo.setMes(dto.getMes());
@@ -129,19 +147,15 @@ public class TiempoETLService {
 
             tiempoTransformado.add(tiempo);
         }
+        System.out.println("Registros a insertar: " + tiempoTransformado.size());
+        dimTiempoRepository.saveAll(tiempoTransformado);
     }
 
     public void ejecutarETL(String sqlQuery) {
-        List<Map<String, Object>> origen = extraerFechasRentasOLTP(sqlQuery);
-        List<TiempoDTO> transformadas = transformarFechas(origen);
+        List<Map<String, Object>> origen = extraerFechasPagosOLTP(sqlQuery);
+        List<TiempoDTO> transformadas = transformarFechasTabla(origen);
         cargarFechasOLAP(transformadas);
     }
-    
-    // public void ejecutarETL() {
-    //     List<Date> fechas = extraerFechasRenta();
-    //     List<DimTiempo> tiempoTransformado = transformarFechas(fechas);
-    //     cargarDimTiempo(tiempoTransformado);
-    // }
 
     public List<DimTiempo> getAllDimTiempo() {
         return dimTiempoRepository.findAll();

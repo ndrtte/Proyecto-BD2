@@ -14,7 +14,7 @@ public class TiempoDTO implements IdentificableDTO {
     
     private Integer idTiempo;
     private Date fecha;
-    private String diaSemana;
+    private Integer diaSemana;
     private Integer mes;
     private Integer anio;
     private Integer trimestre;
