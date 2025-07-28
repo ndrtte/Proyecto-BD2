@@ -21,9 +21,6 @@ import hn.unah.proyecto.repositorios.olap.DimTiempoRepository;
 
 @Service
 public class TiempoETLService {
-    
-    // @Autowired
-    // private RentalRepository rentalRepository;
 
     @Autowired
     private DimTiempoRepository dimTiempoRepository;
@@ -47,7 +44,7 @@ public class TiempoETLService {
     }
 
     public List<TiempoDTO> transformarFechasTabla(List<Map<String, Object>> fechasOrigen) {
-       
+
         Set<LocalDate> fechasUnicas = new HashSet<>();
 
         for (Map<String, Object> fila : fechasOrigen) {
