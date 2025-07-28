@@ -42,16 +42,16 @@ public class CategoriaETLService {
     }
 
     private void cargarCategoriasOLAP(List<CategoriaDTO> categoriasDTO) {
-
         List<DimCategoria> categorias = new ArrayList<>();
 
         for (CategoriaDTO dto : categoriasDTO) {
             DimCategoria entidad = new DimCategoria();
             entidad.setIdCategoria(dto.getId());
             entidad.setNombreCategoria(dto.getNombre());
-
-            dimCategoriaRepository.saveAll(categorias);
+            categorias.add(entidad);
         }
+
+        dimCategoriaRepository.saveAll(categorias);
     }
 
     public void ejecutarETL(String sqlQuery) {
