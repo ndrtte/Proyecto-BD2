@@ -50,7 +50,7 @@ public class HechosAlquilerETLService {
     
 
     private List<Map<String, Object>> extraerHechosOLTP(String sqlQuery) {
-        List<Map<String, Object>> registros = jdbcTemplate.queryForList(sqlQuery);
+        List<Map<String, Object>> registros = jdbcTemplate.queryForList(sqlQuery + " WHERE NOT EXISTS ( SELECT 1 FROM tbl_hechos_renta h WHERE h.id_renta = r.rental_id AND h.id_empleado = r.staff_id AND h.id_pelicula = i.film_id AND h.id_tienda = i.store_id AND h.id_fecha = t.id_fecha )");
         return registros;
     }
 
