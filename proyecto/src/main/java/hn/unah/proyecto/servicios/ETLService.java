@@ -71,7 +71,7 @@ public class ETLService {
         } else if (tablaDestino.equalsIgnoreCase("tbl_renta")) {
             rentaETLService.ejecutarETL(sqlQuery);
         } else if (tablaDestino.equalsIgnoreCase("tbl_tiempo")) {
-            tiempoETLService.ejecutarETL(sqlQuery);
+            tiempoETLService.ejecutarETL(sqlQuery, metodo);
         } else if (tablaDestino.equalsIgnoreCase("tbl_tienda")) {
             tiendaETLService.ejecutarETL(sqlQuery);
         } else {

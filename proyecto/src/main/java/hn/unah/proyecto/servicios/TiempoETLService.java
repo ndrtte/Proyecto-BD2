@@ -11,6 +11,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.core.Local;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
@@ -36,31 +37,6 @@ public class TiempoETLService {
         return registros;
     }
 
-    // public List<DimTiempo> transformarFechas(List<Date> fechas) {
-    //     Set<LocalDate> fechasUnicas = new HashSet<>();
-    //     for(Date date : fechas) {
-    //         if(date != null) {
-    //             LocalDate localDate = date.toInstant()
-    //                                         .atZone(ZoneId.systemDefault())
-    //                                         .toLocalDate();
-    //             fechasUnicas.add(localDate);
-    //         }
-    //     }
-    //     List<DimTiempo> tiempoTransformado = new ArrayList<>();
-    //     for (LocalDate fecha : fechasUnicas) {
-    //         DimTiempo tiempo = new DimTiempo();
-    //         tiempo.setIdTiempo(Integer.parseInt(fecha.toString().replace("-", ""))); 
-    //         tiempo.setFecha(java.sql.Date.valueOf(fecha));
-    //         tiempo.setDiaSemana(fecha.getDayOfWeek().getDisplayName(TextStyle.FULL, new Locale("es"))); 
-    //         tiempo.setMes(fecha.getMonthValue());
-    //         tiempo.setAnio(fecha.getYear());
-    //         tiempo.setTrimestre((fecha.getMonthValue() - 1) / 3 + 1);
-    //         tiempoTransformado.add(tiempo);
-    //     }
-    //     return tiempoTransformado;    
-    // }
-
-    /* Luego lo podemos agregar en utils */
     private Date convertirFecha(Object valor) {
         if (valor instanceof Timestamp) {
             return new Date(((Timestamp) valor).getTime());
@@ -101,9 +77,32 @@ public class TiempoETLService {
         return fechasDTO;
     }
 
-    // private void cargarDimTiempo(List<DimTiempo> tiempos) {
-    //     dimTiempoRepository.saveAll(tiempos);
-    // }
+    public List<TiempoDTO> transformarFechasConsulta(List<Map<String, Object>> fechasOrigen) {
+        List<TiempoDTO> tiemposDTO = new ArrayList<>();
+
+        for (Map<String,Object> fila : fechasOrigen) {
+            TiempoDTO tiempoDTO = new TiempoDTO();
+
+            Date fecha = ((Date) fila.get("FECHA"));
+            Integer diaSemana = ((Number) fila.get("DIA_SEMANA")).intValue();
+            Integer mes = ((Number) fila.get("MES")).intValue();
+            Integer anio = ((Number) fila.get("ANIO")).intValue();
+            Integer trimestre = ((Number) fila.get("TRIMESTRE")).intValue();
+
+            tiempoDTO.setFecha(fecha);
+            tiempoDTO.setDiaSemana(diaSemana);
+            tiempoDTO.setMes(mes);
+            tiempoDTO.setAnio(anio);
+            tiempoDTO.setTrimestre(trimestre);
+
+            tiemposDTO.add(tiempoDTO);
+        }
+
+
+        return tiemposDTO;
+    }
+
+
     private void cargarFechasOLAP(List<TiempoDTO> fechasDTO) {
         
         List<DimTiempo> tiempoTransformado = new ArrayList<>();
@@ -119,48 +118,23 @@ public class TiempoETLService {
 
             tiempoTransformado.add(tiempo);
         }
-        System.out.println("Registros a insertar: " + tiempoTransformado.size());
         dimTiempoRepository.saveAll(tiempoTransformado);
     }
 
-    public void ejecutarETL(String sqlQuery) {
+    public void ejecutarETL(String sqlQuery, String metodo) {
         List<Map<String, Object>> origen = extraerFechasPagosOLTP(sqlQuery);
-        List<TiempoDTO> transformadas = transformarFechasTabla(origen);
+        List<TiempoDTO> transformadas;
+        if(metodo.equalsIgnoreCase("Table")){
+            transformadas = transformarFechasTabla(origen);
+        }else{
+            transformadas = transformarFechasConsulta(origen);
+        }
         cargarFechasOLAP(transformadas);
     }
 
     public List<DimTiempo> getAllDimTiempo() {
         return dimTiempoRepository.findAll();
     }
-
-    // public void sincronizarETL(String sqlQuery) {
-    //     // // Este cambio lo genero copilot
-    //     List<Date> fechas = extraerFechasRenta();
-    //     List<DimTiempo> tiemposTransformados = transformarFechas(fechas);
-    //     List<TiempoDTO> fechasDTO = new ArrayList<>();
-    //     for (DimTiempo tiempo : tiemposTransformados) {
-    //         fechasDTO.add(new TiempoDTO(
-    //             tiempo.getIdTiempo(),
-    //             tiempo.getFecha(),
-    //             tiempo.getDiaSemana(),
-    //             tiempo.getMes(),
-    //             tiempo.getAnio(),
-    //             tiempo.getTrimestre()
-    //         ));
-    //     }
-    //     //Logica del uso del metodo sincronizar() de todos los services
-    //     List<DimTiempo> existentes = dimTiempoRepository.findAll();
-        
-    //     IncrementalETLHelper.sincronizar(
-    //         fechasDTO,
-    //         existentes,
-    //         dto -> new DimTiempo(dto.getIdTiempo(), dto.getFecha(), dto.getDiaSemana(), dto.getMes(), dto.getAnio(), dto.getTrimestre()),
-    //         DimTiempo::getIdTiempo,
-    //         entidad -> new TiempoDTO(entidad.getIdTiempo(), entidad.getFecha(), entidad.getDiaSemana(), entidad.getMes(), entidad.getAnio(), entidad.getTrimestre()),
-    //         lista -> dimTiempoRepository.saveAll(lista),
-    //         lista -> dimTiempoRepository.deleteAll(lista)
-    //     );
-    // }  
 }
 
 
