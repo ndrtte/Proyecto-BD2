@@ -31,30 +31,9 @@ public class PeliculaETLService {
     private FilmRepository filmRepository;
 
     private List<Map<String, Object>> extraerPeliculas(String sqlQuery) {
-        List<Map<String, Object>> registrosOLTP = jdbcTemplate.queryForList(sqlQuery);
-        List<Map<String, Object>> registrosOLAP = jdbcTemplate.queryForList("SELECT ID_PELICULA FROM TBL_PELICULA");
-        List<Map<String, Object>> registros = new ArrayList<>();
+        List<Map<String, Object>> registros = jdbcTemplate.queryForList(sqlQuery + " WHERE NOT EXISTS ( SELECT 1 FROM TBL_PELICULA p WHERE p.ID_PELICULA = f.film_id ) ORDER BY f.film_id");
 
-        for (Map<String, Object> filaOLTP : registrosOLTP) {
-            Integer idOLTP = ((Number) filaOLTP.get("FILM_ID")).intValue();
-            boolean existeEnOlap = false;
-
-            for (Map<String, Object> filaOLAP : registrosOLAP) {
-                Integer idOLAP = ((Number) filaOLAP.get("ID_PELICULA")).intValue();
-
-                if (idOLTP.equals(idOLAP)) {
-                    existeEnOlap = true;
-                    break;
-                }
-
-                if (!existeEnOlap) {
-                    registros.add(filaOLTP);
-                }
-
-            }
-        }
-
-        return registrosOLTP;
+        return registros;
     }
 
     private List<PeliculaDTO> transformarPeliculasTabla(List<Map<String, Object>> peliculasOrigen) {
