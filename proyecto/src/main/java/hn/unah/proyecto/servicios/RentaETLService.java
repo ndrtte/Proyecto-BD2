@@ -10,13 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
-// import hn.unah.proyecto.dto.CategoriaDTO;
 import hn.unah.proyecto.dto.RentaDTO;
-// import hn.unah.proyecto.entidades.olap.DimCategoria;
 import hn.unah.proyecto.entidades.olap.DimRenta;
-// import hn.unah.proyecto.entidades.oltp.Rental;
 import hn.unah.proyecto.repositorios.olap.DimRentaRepository;
-// import hn.unah.proyecto.repositorios.oltp.RentalRepository;
 
 @Service
 public class RentaETLService {

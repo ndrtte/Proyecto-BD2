@@ -65,23 +65,5 @@ public class CiudadETLService {
     public List<DimCiudad> getAllCiudades() {
         return dimCiudadRepository.findAll();
     }
-
-    
-    /*
-    public void sincronizarETL(String sqlQuery) {
-        List<Map<String, Object>> origen = extraerCiudadesOLTP(sqlQuery);
-        List<CiudadDTO> ciudadesDTO = transformarCiudades(origen);
-        List<DimCiudad> existentes = dimCiudadRepository.findAll();
-
-        IncrementalETLHelper.sincronizar(
-            ciudadesDTO,
-            existentes,
-            dto -> new DimCiudad(dto.getId(), dto.getNombre()),          
-            DimCiudad::getIdCiudad,
-            entidad -> new CiudadDTO(entidad.getIdCiudad(), entidad.getNombreCiudad()),
-            lista -> dimCiudadRepository.saveAll(lista),
-            lista -> dimCiudadRepository.deleteAll(lista)
-        );
-    }   */
     
 }
