@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import hn.unah.proyecto.dto.HechosDTO;
 import hn.unah.proyecto.entidades.olap.Hechos;
@@ -21,10 +22,10 @@ import hn.unah.proyecto.repositorios.olap.DimPeliculaRepository;
 import hn.unah.proyecto.repositorios.olap.DimRentaRepository;
 import hn.unah.proyecto.repositorios.olap.DimTiempoRepository;
 import hn.unah.proyecto.repositorios.olap.DimTiendaRepository;
-import hn.unah.proyecto.repositorios.olap.HechosAlquilerRepository;
 import hn.unah.proyecto.repositorios.oltp.PaymentRepository;
 import hn.unah.proyecto.repositorios.oltp.RentalRepository;
 
+@Service
 public class HechosAlquilerETLService {
     
     @Autowired
@@ -48,8 +49,6 @@ public class HechosAlquilerETLService {
     @Autowired
     private DimTiendaRepository dimTiendaRepository;
     
-    @Autowired
-    private HechosAlquilerRepository hechosRepository;
 
     private List<Rental> extraerRentasOLTP() {
         return rentalRepository.findAll();
@@ -148,59 +147,12 @@ public class HechosAlquilerETLService {
             hechos.add(hecho);
         }
 
-        hechosRepository.saveAll(hechos);
+       // hechosRepository.saveAll(hechos);
     }
 
-    // public void ejecutarETL() {
-    //     List<Rental> origen = extraerRentasOLTP();
-    //     List<HechosDTO> transformadas = transformarRentas(origen);
-    //     cargarHechosOLAP(transformadas);
-    // }
-
-    /*--- No entiendo la mayoría de esas cosas, pero tratare de encapsularlo xD ---*/
     public void ejecutarETL() {
-        List<Rental> rentasOLTP = extraerRentasOLTP();
-        List<Hechos> hechosOLAP = hechosRepository.findAll();
-
-        // Mapa de rentas OLTP
-        Map<Integer, Rental> mapaRentas = new HashMap<>();
-        for (Rental renta : rentasOLTP) {
-            if (renta.getFechaRenta() != null && renta.getFechaDevolucion() != null)
-                mapaRentas.put(renta.getId(), renta);
-        }
-
-        // Mapa de hechos OLAP (clave: idRenta)
-        Map<Integer, Hechos> mapaHechos = new HashMap<>();
-        for (Hechos hecho : hechosOLAP) {
-            mapaHechos.put(hecho.getRenta().getIdRenta(), hecho);
-        }
-
-        // Detectar eliminaciones (están en OLAP pero ya no en OLTP)
-        List<Hechos> aEliminar = new ArrayList<>();
-        for (Integer idRentaOLAP : mapaHechos.keySet()) {
-            if (!mapaRentas.containsKey(idRentaOLAP)) {
-                aEliminar.add(mapaHechos.get(idRentaOLAP));
-            }
-        }
-
-        // Detectar inserciones (nuevos rentals en OLTP que no están en OLAP)
-        List<Rental> aInsertar = new ArrayList<>();
-        for (Integer idRentaOLTP : mapaRentas.keySet()) {
-            if (!mapaHechos.containsKey(idRentaOLTP)) {
-                aInsertar.add(mapaRentas.get(idRentaOLTP));
-            }
-        }
-
-        // Eliminar los hechos que ya no existen en OLTP
-        hechosRepository.deleteAll(aEliminar);
-
-        // Transformar e insertar los nuevos hechos
-        List<HechosDTO> transformadas = transformarRentas(aInsertar);
+        List<Rental> origen = extraerRentasOLTP();
+        List<HechosDTO> transformadas = transformarRentas(origen);
         cargarHechosOLAP(transformadas);
     }
-
-
-    public List<Hechos> getAllHechosOLAP() {
-        return hechosRepository.findAll();
-    }    
 }
