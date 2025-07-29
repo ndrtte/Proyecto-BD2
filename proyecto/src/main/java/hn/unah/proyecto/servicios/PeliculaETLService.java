@@ -30,11 +30,11 @@ public class PeliculaETLService {
     @Autowired
     private FilmRepository filmRepository;
 
-      private List<Map<String, Object>> extraerPeliculas(String sqlQuery) {
+    private List<Map<String, Object>> extraerPeliculas(String sqlQuery, String metodo) {
+
         List<Map<String, Object>> registrosOLTP = jdbcTemplate.queryForList(sqlQuery);
         List<Map<String, Object>> registrosOLAP = jdbcTemplate.queryForList("SELECT ID_PELICULA FROM TBL_PELICULA");
         List<Map<String, Object>> registros = new ArrayList<>();
-
         for (Map<String, Object> filaOLTP : registrosOLTP) {
             Integer idOLTP = ((Number) filaOLTP.get("FILM_ID")).intValue();
             boolean existeEnOlap = false;
@@ -54,9 +54,8 @@ public class PeliculaETLService {
             }
         }
 
-        return registrosOLTP;
+        return registros;
     }
-
 
     private List<PeliculaDTO> transformarPeliculasTabla(List<Map<String, Object>> peliculasOrigen) {
         List<PeliculaDTO> peliculasDTO = new ArrayList<>();
@@ -152,7 +151,7 @@ public class PeliculaETLService {
     }
 
     public void ejecutarETL(String sqlQuery, String metodo) {
-        List<Map<String, Object>> peliculaOrigen = extraerPeliculas(sqlQuery);
+        List<Map<String, Object>> peliculaOrigen = extraerPeliculas(sqlQuery, metodo);
         List<PeliculaDTO> peliculasTransformadas;
 
         if (metodo.equalsIgnoreCase("Table")) {
