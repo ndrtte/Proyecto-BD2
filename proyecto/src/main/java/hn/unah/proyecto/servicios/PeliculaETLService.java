@@ -46,11 +46,9 @@ public class PeliculaETLService {
                     existeEnOlap = true;
                     break;
                 }
-
-                if (!existeEnOlap) {
+            }
+            if (!existeEnOlap) {
                     registros.add(filaOLTP);
-                }
-
             }
         }
 
