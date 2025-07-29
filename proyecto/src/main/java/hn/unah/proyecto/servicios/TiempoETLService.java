@@ -32,45 +32,20 @@ public class TiempoETLService {
         List<Map<String, Object>> registrosOLAP = jdbcTemplate.queryForList("SELECT FECHA FROM TBL_TIEMPO");
         List<Map<String, Object>> registros = new ArrayList<>();
 
-        if (metodo.equalsIgnoreCase("Table")) {
-            for (Map<String, Object> filaOLTP : registrosOLTP) {
-                Date idOLTP = ((Date) filaOLTP.get("PAYMENT_DATE"));
-                boolean existeEnOlap = false;
+        for (Map<String, Object> filaOLTP : registrosOLTP) {
+            Date idOLTP = ((Date) filaOLTP.get("PAYMENT_DATE"));
+            boolean existeEnOlap = false;
 
-                for (Map<String, Object> filaOLAP : registrosOLAP) {
-                    Date idOLAP = ((Date) filaOLAP.get("FECHA"));
+            for (Map<String, Object> filaOLAP : registrosOLAP) {
+                Date idOLAP = ((Date) filaOLAP.get("FECHA"));
 
-                    if (idOLTP.equals(idOLAP)) {
-                        existeEnOlap = true;
-                        break;
-                    }
-
-                    if (!existeEnOlap) {
-                        registros.add(filaOLTP);
-                    }
-
+                if (idOLTP.equals(idOLAP)) {
+                    existeEnOlap = true;
+                    break;
                 }
-
             }
-        } else {
-            for (Map<String, Object> filaOLTP : registrosOLTP) {
-                Date idOLTP = ((Date) filaOLTP.get("FECHA"));
-                boolean existeEnOlap = false;
-
-                for (Map<String, Object> filaOLAP : registrosOLAP) {
-                    Date idOLAP = ((Date) filaOLAP.get("FECHA"));
-
-                    if (idOLTP.equals(idOLAP)) {
-                        existeEnOlap = true;
-                        break;
-                    }
-
-                    if (!existeEnOlap) {
-                        registros.add(filaOLTP);
-                    }
-
-                }
-
+            if (!existeEnOlap) {
+                registros.add(filaOLTP);
             }
         }
 
@@ -123,7 +98,7 @@ public class TiempoETLService {
         for (Map<String, Object> fila : fechasOrigen) {
             TiempoDTO tiempoDTO = new TiempoDTO();
 
-            Date fecha = ((Date) fila.get("FECHA"));
+            Date fecha = ((Date) fila.get("PAYMENT_DATE"));
             Integer diaSemana = ((Number) fila.get("DIA_SEMANA")).intValue();
             Integer mes = ((Number) fila.get("MES")).intValue();
             Integer anio = ((Number) fila.get("ANIO")).intValue();
