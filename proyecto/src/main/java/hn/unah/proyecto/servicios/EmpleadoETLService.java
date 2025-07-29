@@ -27,48 +27,11 @@ public class EmpleadoETLService {
     private JdbcTemplate jdbcTemplate;
 
     private List<Map<String, Object>> extraerEmpleadosOLTP(String sqlQuery, String metodo) {
+        List<Map<String, Object>> registros;
 
-        List<Map<String, Object>> registrosOLTP = jdbcTemplate.queryForList(sqlQuery);
-        List<Map<String, Object>> registrosOLAP = jdbcTemplate.queryForList("SELECT ID_EMPLEADO FROM TBL_EMPLEADO");
-        List<Map<String, Object>> registros = new ArrayList<>();
-
-        if (metodo.equalsIgnoreCase("Table")) {
-            for (Map<String, Object> filaOLTP : registrosOLTP) {
-                Integer idOLTP = ((Number) filaOLTP.get("STAFF_ID")).intValue();
-                boolean existeEnOlap = false;
-
-                for (Map<String, Object> filaOLAP : registrosOLAP) {
-                    Integer idOLAP = ((Number) filaOLAP.get("ID_EMPLEADO")).intValue();
-
-                    if (idOLTP.equals(idOLAP)) {
-                        existeEnOlap = true;
-                        break;
-                    }
-                }
-                if (!existeEnOlap) {
-                    registros.add(filaOLTP);
-                }
-            }
-        } else {
-            for (Map<String, Object> filaOLTP : registrosOLTP) {
-                Integer idOLTP = ((Number) filaOLTP.get("idEmpleado")).intValue();
-                boolean existeEnOlap = false;
-
-                for (Map<String, Object> filaOLAP : registrosOLAP) {
-                    Integer idOLAP = ((Number) filaOLAP.get("ID_EMPLEADO")).intValue();
-
-                    if (idOLTP.equals(idOLAP)) {
-                        existeEnOlap = true;
-                        break;
-                    }
-                }
-                if (!existeEnOlap) {
-                    registros.add(filaOLTP);
-                }
-            }
-        }
-
-        return registrosOLTP;
+        registros = jdbcTemplate.queryForList(sqlQuery + " WHERE NOT EXISTS ( SELECT 1 FROM TBL_EMPLEADO e WHERE e.ID_EMPLEADO = STAFF.STAFF_ID ) ORDER BY STAFF_ID");
+        
+        return registros;
     }
 
     public List<EmpleadoDTO> transformarEmpleadoTabla(List<Map<String, Object>> empleadosOrigen) {
