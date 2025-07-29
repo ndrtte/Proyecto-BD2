@@ -26,27 +26,49 @@ public class EmpleadoETLService {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-      private List<Map<String, Object>> extraerEmpleadosOLTP(String sqlQuery) {
+    private List<Map<String, Object>> extraerEmpleadosOLTP(String sqlQuery, String metodo) {
+
         List<Map<String, Object>> registrosOLTP = jdbcTemplate.queryForList(sqlQuery);
         List<Map<String, Object>> registrosOLAP = jdbcTemplate.queryForList("SELECT ID_EMPLEADO FROM TBL_EMPLEADO");
-        List<Map<String,Object>> registros = new ArrayList<>();
+        List<Map<String, Object>> registros = new ArrayList<>();
 
-        for (Map<String,Object> filaOLTP: registrosOLTP) {
-            Integer idOLTP = ((Number) filaOLTP.get("STAFF_ID")).intValue();
-            boolean existeEnOlap = false;
-            
-            for (Map<String,Object> filaOLAP : registrosOLAP) {
-                Integer idOLAP = ((Number) filaOLAP.get("ID_EMPLEADO")).intValue();
+        if (metodo.equalsIgnoreCase("Table")) {
+            for (Map<String, Object> filaOLTP : registrosOLTP) {
+                Integer idOLTP = ((Number) filaOLTP.get("STAFF_ID")).intValue();
+                boolean existeEnOlap = false;
 
-                if (idOLTP.equals(idOLAP)){
-                    existeEnOlap = true;
-                    break;
+                for (Map<String, Object> filaOLAP : registrosOLAP) {
+                    Integer idOLAP = ((Number) filaOLAP.get("ID_EMPLEADO")).intValue();
+
+                    if (idOLTP.equals(idOLAP)) {
+                        existeEnOlap = true;
+                        break;
+                    }
+
+                    if (!existeEnOlap) {
+                        registros.add(filaOLTP);
+                    }
+
                 }
+            }
+        }else {
+            for (Map<String, Object> filaOLTP : registrosOLTP) {
+                Integer idOLTP = ((Number) filaOLTP.get("idEmpleado")).intValue();
+                boolean existeEnOlap = false;
 
-                if(!existeEnOlap){
-                    registros.add(filaOLTP);
+                for (Map<String, Object> filaOLAP : registrosOLAP) {
+                    Integer idOLAP = ((Number) filaOLAP.get("ID_EMPLEADO")).intValue();
+
+                    if (idOLTP.equals(idOLAP)) {
+                        existeEnOlap = true;
+                        break;
+                    }
+
+                    if (!existeEnOlap) {
+                        registros.add(filaOLTP);
+                    }
+
                 }
-
             }
         }
 
@@ -115,7 +137,7 @@ public class EmpleadoETLService {
     }
 
     public void ejecutarETL(String sqlQuery, String metodo) {
-        List<Map<String, Object>> empleadosOrigen = extraerEmpleadosOLTP(sqlQuery);
+        List<Map<String, Object>> empleadosOrigen = extraerEmpleadosOLTP(sqlQuery, metodo);
         List<EmpleadoDTO> empleadosTransformados;
 
         if (metodo.equalsIgnoreCase("Table")) {
