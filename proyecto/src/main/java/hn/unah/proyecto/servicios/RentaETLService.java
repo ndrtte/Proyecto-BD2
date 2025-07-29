@@ -39,15 +39,13 @@ public class RentaETLService {
                     existeEnOlap = true;
                     break;
                 }
-
-                if(!existeEnOlap){
+            }
+            if(!existeEnOlap){
                     registros.add(filaOLTP);
-                }
-
             }
         }
 
-        return registrosOLTP;
+        return registros;
     }
 
     private Date convertirFecha(Object valor) {
