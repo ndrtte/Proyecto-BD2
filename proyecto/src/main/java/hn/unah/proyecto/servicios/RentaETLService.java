@@ -24,8 +24,30 @@ public class RentaETLService {
     private JdbcTemplate jdbcTemplate;
 
     private List<Map<String, Object>> extraerRentasOLTP(String sqlQuery) {
-        List<Map<String, Object>> registros = jdbcTemplate.queryForList(sqlQuery + " WHERE NOT EXISTS ( SELECT 1 FROM TBL_RENTA r WHERE r.ID_RENTA = RENTAL.RENTAL_ID ) ORDER BY RENTAL_ID");
-        return registros;
+        List<Map<String, Object>> registrosOLTP = jdbcTemplate.queryForList(sqlQuery);
+        List<Map<String, Object>> registrosOLAP = jdbcTemplate.queryForList("SELECT ID_RENTA FROM TBL_RENTA");
+        List<Map<String,Object>> registros = new ArrayList<>();
+
+        for (Map<String,Object> filaOLTP: registrosOLTP) {
+            Integer idOLTP = ((Number) filaOLTP.get("RENTAL_ID")).intValue();
+            boolean existeEnOlap = false;
+            
+            for (Map<String,Object> filaOLAP : registrosOLAP) {
+                Integer idOLAP = ((Number) filaOLAP.get("ID_RENTA")).intValue();
+
+                if (idOLTP.equals(idOLAP)){
+                    existeEnOlap = true;
+                    break;
+                }
+
+                if(!existeEnOlap){
+                    registros.add(filaOLTP);
+                }
+
+            }
+        }
+
+        return registrosOLTP;
     }
 
     private Date convertirFecha(Object valor) {

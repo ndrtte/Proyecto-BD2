@@ -26,10 +26,31 @@ public class EmpleadoETLService {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    private List<Map<String, Object>> extraerEmpleadosOLTP(String sqlQuery) {
-        List<Map<String, Object>> registros = jdbcTemplate.queryForList(sqlQuery + " WHERE NOT EXISTS ( SELECT 1 FROM TBL_EMPLEADO e WHERE e.ID_EMPLEADO = STAFF_ID ) ORDER BY STAFF_ID");
+      private List<Map<String, Object>> extraerEmpleadosOLTP(String sqlQuery) {
+        List<Map<String, Object>> registrosOLTP = jdbcTemplate.queryForList(sqlQuery);
+        List<Map<String, Object>> registrosOLAP = jdbcTemplate.queryForList("SELECT ID_EMPLEADO FROM TBL_EMPLEADO");
+        List<Map<String,Object>> registros = new ArrayList<>();
 
-        return registros;
+        for (Map<String,Object> filaOLTP: registrosOLTP) {
+            Integer idOLTP = ((Number) filaOLTP.get("STAFF_ID")).intValue();
+            boolean existeEnOlap = false;
+            
+            for (Map<String,Object> filaOLAP : registrosOLAP) {
+                Integer idOLAP = ((Number) filaOLAP.get("ID_EMPLEADO")).intValue();
+
+                if (idOLTP.equals(idOLAP)){
+                    existeEnOlap = true;
+                    break;
+                }
+
+                if(!existeEnOlap){
+                    registros.add(filaOLTP);
+                }
+
+            }
+        }
+
+        return registrosOLTP;
     }
 
     public List<EmpleadoDTO> transformarEmpleadoTabla(List<Map<String, Object>> empleadosOrigen) {

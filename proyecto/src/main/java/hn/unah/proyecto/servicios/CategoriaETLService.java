@@ -21,8 +21,29 @@ public class CategoriaETLService {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    private List<Map<String, Object>> extraerCategoriasOLTP(String sqlQuery) {
-        List<Map<String, Object>> registros = jdbcTemplate.queryForList(sqlQuery + " WHERE NOT EXISTS ( SELECT 1 FROM TBL_CATEGORIA c WHERE c.ID_CATEGORIA = CATEGORY_ID) order by CATEGORY_ID");
+     private List<Map<String, Object>> extraerCategoriasOLTP(String sqlQuery) {
+        List<Map<String, Object>> registrosOLTP = jdbcTemplate.queryForList(sqlQuery);
+        List<Map<String, Object>> registrosOLAP = jdbcTemplate.queryForList("SELECT ID_CATEGORIA FROM TBL_CATEGORIA");
+        List<Map<String, Object>> registros = new ArrayList<>();
+
+        for (Map<String, Object> filaOLTP : registrosOLTP) {
+            Integer idOLTP = ((Number) filaOLTP.get("CATEGORY_ID")).intValue();
+            boolean existeEnOLAP = false;
+
+            for (Map<String, Object> filaOLAP : registrosOLAP) {
+                Integer idOLAP = ((Number) filaOLAP.get("ID_CATEGORIA")).intValue();
+
+                if (idOLTP.equals(idOLAP)) {
+                    existeEnOLAP = true;
+                    break;
+                }
+
+                if (!existeEnOLAP) {
+                    registros.add(filaOLTP);
+                }
+            }
+
+        }
         return registros;
     }
 

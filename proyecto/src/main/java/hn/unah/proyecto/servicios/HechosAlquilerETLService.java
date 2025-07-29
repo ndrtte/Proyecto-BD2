@@ -1,6 +1,8 @@
 package hn.unah.proyecto.servicios;
 
+import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -10,18 +12,23 @@ import org.springframework.stereotype.Service;
 
 import hn.unah.proyecto.dto.HechosDTO;
 import hn.unah.proyecto.entidades.olap.Hechos;
+import hn.unah.proyecto.entidades.oltp.Rental;
 import hn.unah.proyecto.repositorios.olap.DimEmpleadoRepository;
 import hn.unah.proyecto.repositorios.olap.DimPeliculaRepository;
 import hn.unah.proyecto.repositorios.olap.DimRentaRepository;
 import hn.unah.proyecto.repositorios.olap.DimTiempoRepository;
 import hn.unah.proyecto.repositorios.olap.DimTiendaRepository;
 import hn.unah.proyecto.repositorios.olap.HechosAlquilerRepository;
+import hn.unah.proyecto.repositorios.oltp.RentalRepository;
 
 @Service
 public class HechosAlquilerETLService {
     
     @Autowired
     private DimRentaRepository dimRentaRepository;
+
+    @Autowired
+    private RentalRepository rentalRepository;
 
     @Autowired
     private DimTiempoRepository dimTiempoRepository;
@@ -76,6 +83,21 @@ public class HechosAlquilerETLService {
             dto.setIdTiempo(tiempoId);
             dto.setMontoPago(monto);
             dto.setCantidad(cantidad);
+
+            Rental renta = rentalRepository.findById(rentaId).get();
+
+            Date fechaRenta = renta.getFechaRenta();
+            Date fechaDevolucion = renta.getFechaDevolucion();
+
+            double horas;
+
+            if (fechaDevolucion != null) {
+                Duration duracion = Duration.between(fechaRenta.toInstant(), fechaDevolucion.toInstant());
+                horas = duracion.toHours();
+            } else {
+                horas = 0;
+            }
+            dto.setTiempoRenta(horas);
 
             hechosDTO.add(dto);
         }
