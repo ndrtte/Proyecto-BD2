@@ -30,28 +30,13 @@ public class PeliculaETLService {
     @Autowired
     private FilmRepository filmRepository;
 
-    private List<Map<String, Object>> extraerPeliculas(String sqlQuery, String metodo) {
-
-        List<Map<String, Object>> registrosOLTP = jdbcTemplate.queryForList(sqlQuery);
-        List<Map<String, Object>> registrosOLAP = jdbcTemplate.queryForList("SELECT ID_PELICULA FROM TBL_PELICULA");
-        List<Map<String, Object>> registros = new ArrayList<>();
-        for (Map<String, Object> filaOLTP : registrosOLTP) {
-            Integer idOLTP = ((Number) filaOLTP.get("FILM_ID")).intValue();
-            boolean existeEnOlap = false;
-
-            for (Map<String, Object> filaOLAP : registrosOLAP) {
-                Integer idOLAP = ((Number) filaOLAP.get("ID_PELICULA")).intValue();
-
-                if (idOLTP.equals(idOLAP)) {
-                    existeEnOlap = true;
-                    break;
-                }
-            }
-            if (!existeEnOlap) {
-                    registros.add(filaOLTP);
-            }
+    private List<Map<String, Object>> extraerPeliculas(String sqlQuery,String metodo) {
+        List<Map<String, Object>> registros;
+        if(metodo.equalsIgnoreCase("Table")){
+            registros = jdbcTemplate.queryForList(sqlQuery + " WHERE NOT EXISTS ( SELECT 1 FROM TBL_PELICULA p WHERE p.ID_PELICULA = film_id ) ORDER BY film_id");
+        }else {
+            registros = jdbcTemplate.queryForList(sqlQuery + " WHERE NOT EXISTS ( SELECT 1 FROM TBL_PELICULA p WHERE p.ID_PELICULA = f.film_id ) ORDER BY f.film_id");
         }
-
         return registros;
     }
 
@@ -149,7 +134,7 @@ public class PeliculaETLService {
     }
 
     public void ejecutarETL(String sqlQuery, String metodo) {
-        List<Map<String, Object>> peliculaOrigen = extraerPeliculas(sqlQuery, metodo);
+        List<Map<String, Object>> peliculaOrigen = extraerPeliculas(sqlQuery,metodo);
         List<PeliculaDTO> peliculasTransformadas;
 
         if (metodo.equalsIgnoreCase("Table")) {
