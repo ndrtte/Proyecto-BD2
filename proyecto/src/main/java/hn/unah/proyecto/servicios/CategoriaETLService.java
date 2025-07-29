@@ -37,10 +37,9 @@ public class CategoriaETLService {
                     existeEnOLAP = true;
                     break;
                 }
-
-                if (!existeEnOLAP) {
-                    registros.add(filaOLTP);
-                }
+            }
+            if (!existeEnOLAP) {
+                registros.add(filaOLTP);
             }
 
         }
