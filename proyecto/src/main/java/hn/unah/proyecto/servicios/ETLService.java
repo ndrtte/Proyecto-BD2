@@ -79,6 +79,8 @@ public class ETLService {
             tiendaETLService.ejecutarETL(sqlQuery);
         } else if(tablaDestino.equalsIgnoreCase("tbl_hechos_renta")){
             hechosETLService.ejecutarETL(sqlQuery);
+        }else {
+            return "La tabla de destino no es valida";
         }
 
         return "Migracion exitosa";
