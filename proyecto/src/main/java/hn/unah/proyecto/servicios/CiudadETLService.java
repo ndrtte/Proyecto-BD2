@@ -22,28 +22,7 @@ public class CiudadETLService {
     private JdbcTemplate jdbcTemplate;
 
     private List<Map<String, Object>> extraerCiudadesOLTP(String sqlQuery) {
-        List<Map<String, Object>> registrosOLTP = jdbcTemplate.queryForList(sqlQuery);
-        List<Map<String, Object>> registrosOLAP = jdbcTemplate.queryForList("SELECT ID_CIUDAD FROM TBL_CIUDAD");
-        List<Map<String, Object>> registros = new ArrayList<>();
-
-        for (Map<String, Object> filaOLTP : registrosOLTP) {
-            Integer idOLTP = ((Number) filaOLTP.get("CITY_ID")).intValue();
-            boolean existeEnOlap = false;
-
-            for (Map<String, Object> filaOLAP : registrosOLAP) {
-                Integer idOLAP = ((Number) filaOLAP.get("ID_CIUDAD")).intValue();
-
-                if (idOLTP.equals(idOLAP)) {
-                    existeEnOlap = true;
-                    break;
-                }
-
-            }
-            if (!existeEnOlap) {
-                registros.add(filaOLTP);
-            }
-        }
-
+        List<Map<String, Object>> registros = jdbcTemplate.queryForList(sqlQuery + " WHERE NOT EXISTS ( SELECT 1 FROM TBL_CIUDAD c WHERE c.ID_CIUDAD = CITY_ID) order by CITY_ID");
         return registros;
     }
 
