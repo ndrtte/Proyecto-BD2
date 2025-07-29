@@ -44,14 +44,12 @@ public class EmpleadoETLService {
                         existeEnOlap = true;
                         break;
                     }
-
-                    if (!existeEnOlap) {
-                        registros.add(filaOLTP);
-                    }
-
+                }
+                if (!existeEnOlap) {
+                    registros.add(filaOLTP);
                 }
             }
-        }else {
+        } else {
             for (Map<String, Object> filaOLTP : registrosOLTP) {
                 Integer idOLTP = ((Number) filaOLTP.get("idEmpleado")).intValue();
                 boolean existeEnOlap = false;
@@ -63,11 +61,9 @@ public class EmpleadoETLService {
                         existeEnOlap = true;
                         break;
                     }
-
-                    if (!existeEnOlap) {
-                        registros.add(filaOLTP);
-                    }
-
+                }
+                if (!existeEnOlap) {
+                    registros.add(filaOLTP);
                 }
             }
         }
