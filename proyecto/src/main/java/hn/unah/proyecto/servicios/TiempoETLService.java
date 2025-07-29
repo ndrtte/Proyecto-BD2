@@ -28,27 +28,15 @@ public class TiempoETLService {
     private JdbcTemplate jdbcTemplate;
 
     private List<Map<String, Object>> extraerFechasPagosOLTP(String sqlQuery, String metodo) {
-        List<Map<String, Object>> registrosOLTP = jdbcTemplate.queryForList(sqlQuery);
-        List<Map<String, Object>> registrosOLAP = jdbcTemplate.queryForList("SELECT FECHA FROM TBL_TIEMPO");
-        List<Map<String, Object>> registros = new ArrayList<>();
+        List<Map<String,Object>> registros;
 
-        for (Map<String, Object> filaOLTP : registrosOLTP) {
-            Date idOLTP = ((Date) filaOLTP.get("PAYMENT_DATE"));
-            boolean existeEnOlap = false;
+        if(metodo.equalsIgnoreCase("Table")){
+            registros = jdbcTemplate.queryForList( sqlQuery + " WHERE NOT EXISTS (SELECT 1 FROM TBL_TIEMPO t WHERE t.fecha = TRUNC(payment.payment_date))");
+        }else{
+            registros = jdbcTemplate.queryForList( sqlQuery + " WHERE NOT EXISTS (SELECT 1 FROM TBL_TIEMPO t WHERE t.fecha = TRUNC(p.payment_date))");
 
-            for (Map<String, Object> filaOLAP : registrosOLAP) {
-                Date idOLAP = ((Date) filaOLAP.get("FECHA"));
-
-                if (idOLTP.equals(idOLAP)) {
-                    existeEnOlap = true;
-                    break;
-                }
-            }
-            if (!existeEnOlap) {
-                registros.add(filaOLTP);
-            }
         }
-
+        
         return registros;
     }
 
