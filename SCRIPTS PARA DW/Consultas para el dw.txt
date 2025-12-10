@@ -1,0 +1,59 @@
+INSERTAR EN EL SIGUIENTE ORDEN
+
+--Para Categoria
+SELECT CATEGORY_ID, NAME FROM CATEGORY
+
+--Para Ciudad
+SELECT CITY_ID, CITY FROM CITY
+
+--Para Peliculas
+SELECT f.film_id AS FILM_ID, f.title AS TITLE, f.rating AS RATING, 
+       c.category_id AS CATEGORY_ID, c.name AS CATEGORY_NAME
+FROM film f
+JOIN film_category fc ON f.film_id = fc.film_id
+JOIN category c ON fc.category_id = c.category_id 
+
+
+--Para Tienda
+SELECT s.store_id AS STORE_ID,
+       a.city_id AS CITY_ID
+FROM store s
+JOIN address a ON s.address_id = a.address_id
+
+--Para Empleados
+SELECT staff_id AS idEmpleado,
+       first_name || ' ' || last_name AS nombre,
+       store_id AS idTienda
+FROM staff;
+
+
+--Para Renta
+SELECT RENTAL_ID, RENTAL_DATE, RETURN_DATE from RENTAL
+
+--Para tiempo
+SELECT 
+    DISTINCT
+    TRUNC(p.payment_date) AS PAYMENT_DATE,
+    TO_NUMBER(TO_CHAR(p.payment_date, 'D')) AS DIA_SEMANA,
+    EXTRACT(MONTH FROM p.payment_date) AS MES,
+    EXTRACT(YEAR FROM p.payment_date) AS ANIO,
+    TO_NUMBER(TO_CHAR(p.payment_date, 'Q')) AS TRIMESTRE
+FROM 
+    payment p
+
+--Para hechos
+SELECT 
+    r.rental_id AS id_renta,
+    r.staff_id AS id_empleado,
+    i.film_id AS id_pelicula,
+    i.store_id AS id_tienda, 
+    t.id_fecha AS id_fecha,
+    p.amount AS ingresos
+FROM 
+    rental r
+JOIN 
+    payment p ON r.rental_id = p.rental_id
+JOIN 
+    inventory i ON r.inventory_id = i.inventory_id
+JOIN 
+    tbl_tiempo t ON TRUNC(r.rental_date) = t.fecha
